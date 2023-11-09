@@ -9,11 +9,13 @@ let HEIGHT = Math.min(window.innerHeight, window.innerWidth) * 0.9;
 let horizontalScale = 1;
 let objectSpeed = 0; // as a fraction of the speed of light
 let frameSpeed = 0;
+let triangleChecked = false;
 let spacing = canvas.height / 20;
 
 let scale_slider_id = createSliderWithHeader('slider-container', 'Scale', 1, 100, 1, 0.01, '', update);
 let obj_slider_id = createSliderWithHeader('slider-container', 'Object speed', -0.99, 0.99, 0, 0.001, ' c', update);
 let frame_speed_slider_id = createSliderWithHeader('slider-container', 'Frame speed', -0.99, 0.99, 0, 0.001, ' c', update);
+let triangle_checkbox = addCheckbox('slider-container', " Triangle", 1, update);
 
 // Call resizeCanvas initially to ensure proper sizing
 window.addEventListener('resize', resizeCanvas);
@@ -23,6 +25,10 @@ function update(){
     horizontalScale = ((parseFloat(sliders[scale_slider_id].value)-1) ** 5 / 10000000) + 1;
     objectSpeed = parseFloat(sliders[obj_slider_id].value);
     frameSpeed = parseFloat(sliders[frame_speed_slider_id].value);
+    if(Math.abs(frameSpeed) < 0.05) frameSpeed = 0;
+    if(Math.abs(objectSpeed) < 0.05) objectSpeed = 0;
+    triangleChecked = triangle_checkbox.checked;
+    console.log(triangleChecked);
     drawMinkowski();
 }
 
@@ -32,7 +38,6 @@ function resizeCanvas() {
     HEIGHT = Math.min(window.innerHeight, window.innerWidth) * 0.9;
     canvas.width = HEIGHT;
     canvas.height = HEIGHT;
-    console.log(HEIGHT);
     // canvas.moveTo(window.innerHeight/2, window.innerHeight/2)
     drawMinkowski(); 
 }
@@ -45,7 +50,7 @@ function drawMinkowski() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     HEIGHT = Math.min(window.innerHeight, window.innerWidth) * 0.9;
     spacing = canvas.height / 20;
-
+    console.log("spacing", spacing);
     // Grid
     drawGrid();
 
@@ -67,8 +72,16 @@ function drawMinkowski() {
     ctx.stroke();
 
     sum_speed = vel_addition(frameSpeed, -objectSpeed);
-    sleeping = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, frameSpeed, 'red', sleeping = true);
-    running = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, sum_speed, 'blue', sleeping = false);
+    sleeping_points = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, frameSpeed, 'red', sleeping = true);
+    running_points = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, sum_speed, 'blue', sleeping = false);
+
+    if(triangleChecked){
+        [x1, y1] = running_points[6];
+        [x2, y2] = sleeping_points[6];
+        drawLine([x1, y1], [x2, y2], 'green', 4);
+        drawLine([x1, y1], [x1, y2], 'red', 4);
+        drawLine([x1, y2], [x2, y2], 'blue', 4);
+    }
 }
 
 
@@ -109,7 +122,8 @@ function drawHyperbolas() {
     let maxRange = 10/horizontalScale;
     // Set styles for hyperbolas
     ctx.strokeStyle = 'blue'; // Green for time-like hyperbolas
-    ctx.lineWidth = 1;
+    if(spacing < 50) ctx.lineWidth = 0.5;
+    else ctx.lineWidth = 1;
     ctx.setLineDash([5, 5]);
     
     

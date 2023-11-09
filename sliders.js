@@ -55,3 +55,30 @@ function removeSlider(sliderId) {
         sliderToRemove.remove();
     }
 }
+
+function addCheckbox(containerId, label, checkboxId, handler) {
+    // Find the container where the checkbox will be added
+    const container = document.getElementById(containerId);
+
+    const header = document.createElement('h4');
+    header.textContent = '';
+    container.appendChild(header);
+
+    // Create the checkbox input element
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.id = checkboxId;
+
+    // Create a label element for the checkbox
+    const checkboxLabel = document.createElement('label');
+    checkboxLabel.htmlFor = checkboxId;
+    checkboxLabel.textContent = label;
+
+    checkbox.addEventListener('change', handler);
+
+    // Append the checkbox and label to the container
+    container.appendChild(checkbox);
+    container.appendChild(checkboxLabel);
+
+    return checkbox;
+}

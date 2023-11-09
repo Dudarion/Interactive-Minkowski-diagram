@@ -15,15 +15,23 @@ function init_cats(){
 
 function draw_cat(ctx, x, y, sleeping)
 {
-    new_x = canvas.width / 2 + x*horizontalScale*spacing;
-    new_y = canvas.height/2 - y*spacing;
+    let new_x = canvas.width / 2 + x*horizontalScale*spacing;
+    let new_y = canvas.height / 2 - y*spacing;
+
+    if(sleeping) {
+        cat = sleeping_cat;
+        desired_width = spacing * 0.8;
+    }
+    else {
+        cat = running_cat;
+        desired_width = spacing * 1.2;
+    }
     
-    if(sleeping){
-        ctx.drawImage(sleeping_cat, new_x - sleeping_cat.width/2, new_y - sleeping_cat.height/2);
-    }
-    else{
-        ctx.drawImage(running_cat, new_x - running_cat.width/2, new_y - running_cat.height/2);
-    }
+    ratio = cat.height / cat.width;
+
+    new_x = new_x - desired_width/2;
+    new_y = new_y - desired_width*ratio/2;
+    ctx.drawImage(cat, new_x, new_y, desired_width, desired_width*ratio);
 }
 
 
