@@ -1,12 +1,31 @@
 const canvas = document.getElementById('minkowski');
 const ctx = canvas.getContext('2d');
+const [running_cat, sleeping_cat] = init_cats();
 
-running_cat = new Image();
-running_cat.src = 'running_cat_small.png';
-sleeping_cat = new Image();
-sleeping_cat.src = 'sleeping_small.png';
 
 let HEIGHT = Math.min(window.innerHeight, window.innerWidth) * 0.9;
+
+
+let horizontalScale = 1;
+let objectSpeed = 0; // as a fraction of the speed of light
+let frameSpeed = 0;
+let spacing = canvas.height / 20;
+
+let scale_slider_id = createSliderWithHeader('slider-container', 'Scale', 1, 100, 1, 0.01, '', update);
+let obj_slider_id = createSliderWithHeader('slider-container', 'Object speed', -0.99, 0.99, 0, 0.001, ' c', update);
+let frame_speed_slider_id = createSliderWithHeader('slider-container', 'Frame speed', -0.99, 0.99, 0, 0.001, ' c', update);
+
+// Call resizeCanvas initially to ensure proper sizing
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas(); // This ensures the canvas is sized before the first draw
+
+function update(){
+    horizontalScale = ((parseFloat(sliders[scale_slider_id].value)-1) ** 5 / 10000000) + 1;
+    objectSpeed = parseFloat(sliders[obj_slider_id].value);
+    frameSpeed = parseFloat(sliders[frame_speed_slider_id].value);
+    drawMinkowski();
+}
+
 
 // Set canvas size
 function resizeCanvas() {
@@ -15,12 +34,8 @@ function resizeCanvas() {
     canvas.height = HEIGHT;
     console.log(HEIGHT);
     // canvas.moveTo(window.innerHeight/2, window.innerHeight/2)
-    drawMinkowski(); // Draw the diagram after resizing
+    drawMinkowski(); 
 }
-
-let horizontalScale = 1;
-let objectSpeed = 0; // as a fraction of the speed of light
-let spacing = canvas.height / 20;
 
 
 function drawMinkowski() {
@@ -29,10 +44,6 @@ function drawMinkowski() {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     HEIGHT = Math.min(window.innerHeight, window.innerWidth) * 0.9;
-
-    // Rectangle
-    // ctx.rect(canvas.width/2 - (canvas.height/2)*0.9, canvas.height/2 - (canvas.height/2)*0.9, HEIGHT, HEIGHT);
-
     spacing = canvas.height / 20;
 
     // Grid
@@ -40,35 +51,13 @@ function drawMinkowski() {
 
     // Time-like and space-like hyperbolas
     drawHyperbolas();
-    console.log('Start');
-    console.log(HEIGHT);
 
     // Light cones
-    ctx.strokeStyle = 'orange';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    MT(-canvas.height / 2, -canvas.height / 2); LT(canvas.height / 2, canvas.height / 2);
-    MT(-canvas.height / 2, canvas.height / 2); LT(canvas.height / 2, -canvas.height / 2);
-    ctx.stroke();
-
-    draw_cat(0, 0, true);
-    draw_cat(150, 150, false);
-
-    // Worldline of the object
-    ctx.strokeStyle = 'blue';
-    ctx.beginPath();
-    MT(0, 0); LT(500, -500*objectSpeed);
-    ctx.stroke();
+    drawLine([-canvas.height / 2, -canvas.height / 2], [canvas.height / 2, canvas.height / 2], 'orange', 3);
+    drawLine([-canvas.height / 2, canvas.height / 2], [canvas.height / 2, -canvas.height / 2], 'orange', 3);
 
     // Horizontal and vertical axes
-    ctx.strokeStyle = 'black';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    MT(-canvas.height / 2, 0);
-    LT(canvas.height / 2, 0);
-    // MT(0, -canvas.height/2);
-    // LT(0, canvas.height/2);
-    ctx.stroke();
+    drawLine([-canvas.height / 2, 0], [canvas.height / 2, 0], 'black', 3);
 
     // Rectangle
     ctx.beginPath();
@@ -76,38 +65,19 @@ function drawMinkowski() {
     ctx.lineWidth = 5;
     ctx.strokeRect(0, 0, HEIGHT, HEIGHT);
     ctx.stroke();
+
+    sum_speed = vel_addition(frameSpeed, -objectSpeed);
+    sleeping = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, frameSpeed, 'red', sleeping = true);
+    running = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, sum_speed, 'blue', sleeping = false);
 }
 
-// Call resizeCanvas initially to ensure proper sizing
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas(); // This ensures the canvas is sized before the first draw
 
-// Scaling
-const scaleSlider = document.getElementById('scaleSlider');
-const scaleValue = document.getElementById('scaleValue');
-scaleSlider.oninput = function() {
-    horizontalScale = ((parseFloat(this.value)-1) ** 5 / 10000000) + 1;
-    scaleValue.textContent = this.value;
-    drawMinkowski();
-};
-
-// Object Speed
-const speedSlider = document.getElementById('speedSlider');
-const speedValue = document.getElementById('speedValue');
-speedSlider.oninput = function() {
-    objectSpeed = parseFloat(this.value);
-    speedValue.textContent = this.value;
-    drawMinkowski();
-};
-
-
-
-
-function MT(x, y){
-    ctx.moveTo(canvas.width / 2 + x*horizontalScale, canvas.height/2 - y);
+function MT(x, y){ // in spacings (light seconds)
+    ctx.moveTo(canvas.width / 2 + x*spacing*horizontalScale, canvas.height/2 - y*spacing);
 }
-function LT(x, y){
-    ctx.lineTo(canvas.width / 2 + x*horizontalScale, canvas.height/2 - y);
+
+function LT(x, y){ // in spacings (light seconds)
+    ctx.lineTo(canvas.width / 2 + x*spacing*horizontalScale, canvas.height/2 - y*spacing);
 }
 
 function drawGrid(){
@@ -117,7 +87,7 @@ function drawGrid(){
     ctx.lineWidth = 2;
 
     // Vertical grid lines
-    for (let x = 0; x < canvas.height/2; x += spacing) {
+    for (let x = 0; x < 10; x += 1) {
         MT(x, -canvas.height/2);
         LT(x, canvas.height/2);
         MT(-x, -canvas.height/2);
@@ -125,7 +95,7 @@ function drawGrid(){
     }
 
     // Horizontal grid lines
-    for (let y = 0; y < canvas.height; y += spacing) {
+    for (let y = 0; y < 10; y += 1) {
         MT(-canvas.height / 2, y);
         LT(canvas.height / 2, y);
         MT(-canvas.height / 2, -y);
@@ -136,7 +106,7 @@ function drawGrid(){
 }
 
 function drawHyperbolas() {
-    let maxRange = canvas.height/(2*horizontalScale);
+    let maxRange = 10/horizontalScale;
     // Set styles for hyperbolas
     ctx.strokeStyle = 'blue'; // Green for time-like hyperbolas
     ctx.lineWidth = 1;
@@ -145,17 +115,17 @@ function drawHyperbolas() {
     
   
     // Time-like hyperbolas (ct)^2 - x^2 = a^2
-    for (let a = spacing; a < canvas.height; a += spacing) {
+    for (let a = 1; a < 10; a += 1) {
         ctx.beginPath(); // upper
         MT(-maxRange, Math.sqrt(maxRange * maxRange + a * a));
-        for (let x = -maxRange; x <= maxRange; x += 1) {
+        for (let x = -maxRange; x <= maxRange; x += 0.1) {
             LT((x + 1), Math.sqrt((x + 1) * (x + 1) + a * a));
         }
         ctx.stroke();
 
         ctx.beginPath(); // lower
         MT(-maxRange, -Math.sqrt(maxRange * maxRange + a * a));
-        for (let x = -maxRange; x <= maxRange; x += 1) {
+        for (let x = -maxRange; x <= maxRange; x += 0.1) {
             LT((x + 1), -Math.sqrt((x + 1) * (x + 1) + a * a));
         }
         ctx.stroke();
@@ -163,9 +133,9 @@ function drawHyperbolas() {
   
     // Space-like hyperbolas x^2 - (ct)^2 = a^2
     let started = false
-    for (let a = spacing; a < canvas.height; a += spacing) {
+    for (let a = 1; a < 10; a += 1) {
         ctx.beginPath(); // right
-        for (let ct = -maxRange; ct <= maxRange; ct += 1) {
+        for (let ct = -maxRange; ct <= maxRange; ct += 0.1) {
             let x = Math.sqrt((ct + 1) * (ct + 1) + a * a)
             if(x < maxRange) {
                 if (!started) {
@@ -178,7 +148,7 @@ function drawHyperbolas() {
         ctx.stroke();
 
         ctx.beginPath(); // left
-        for (let ct = -maxRange; ct <= maxRange; ct += 1) {
+        for (let ct = -maxRange; ct <= maxRange; ct += 0.1) {
             let x = Math.sqrt((ct + 1) * (ct + 1) + a * a)
             if(x < maxRange) {
                 if (!started) {
@@ -194,76 +164,12 @@ function drawHyperbolas() {
 
     ctx.setLineDash([]);
 }
-  
 
-
-function draw_cat(x, y, sleeping)
-{
-    nex_x = canvas.width / 2 + x*horizontalScale*spacing/50;
-    new_y = canvas.height/2 - y*spacing / 50;
-    
-    if(sleeping){
-        ctx.drawImage(sleeping_cat, nex_x, new_y);
-        sleeping_cat.onload = function () { 
-            ctx.drawImage(sleeping_cat, nex_x, new_y);
-        }
-    }
-    else{
-        ctx.drawImage(running_cat, nex_x, new_y);
-        running_cat.onload = function () { 
-            ctx.drawImage(running_cat, nex_x, new_y);
-        }
-    }
+function drawLine(p1, p2, color, width){
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.beginPath();
+    MT(p1[0], p1[1]);
+    LT(p2[0], p2[1]);
+    ctx.stroke();
 }
-
-
-
-
-
-
-// Select the container where the sliders will be added
-const container = document.getElementById('slider-container');
-
-// Function to create a slider with a label
-function createSliderWithLabel(id, labelText) {
-  // Create a div to hold the slider and label
-  const sliderDiv = document.createElement('div');
-  sliderDiv.classList.add('slider-group');
-  
-  // Create the label
-  const label = document.createElement('label');
-  label.htmlFor = id;
-  label.textContent = labelText;
-  sliderDiv.appendChild(label);
-  
-  // Create the slider
-  const slider = document.createElement('input');
-  slider.type = 'range';
-  slider.id = id;
-  slider.name = id;
-  slider.value = 0; // Default value
-  // Set any attributes for the slider as needed
-  slider.setAttribute('min', '0');
-  slider.setAttribute('max', '100');
-  slider.setAttribute('step', '1');
-  sliderDiv.appendChild(slider);
-
-  // Append the div to the container
-  container.appendChild(sliderDiv);
-}
-
-// Function to add text between sliders
-function addTextBetweenSliders(text) {
-  const paragraph = document.createElement('p');
-  paragraph.textContent = text;
-  container.appendChild(paragraph);
-}
-
-// Create the first slider
-createSliderWithLabel('first-slider', 'First Slider:');
-
-// Add text between the first and second slider
-addTextBetweenSliders('Adjust the parameters as needed.');
-
-// Create the second slider
-createSliderWithLabel('second-slider', 'Second Slider:');

@@ -1,45 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Interactive Minkowski Diagram</title>
-<style>
-    body { margin: 0; overflow: hidden; background: linear-gradient(to right, #c9c2f1, #a28fe6);}
-    canvas { display: block; background-color: #fff; margin: auto; padding: 0; position: absolute; left: 0; right: 0;top: 0; bottom: 0;}
-    .slider { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); }
-    .header {
-            position: absolute;
-            top: 10px;
-            left: 20px;
-            font-size: 24px;
-            font-weight: bold;
-    }
-    #slider-container{
-            position: relative;
-            top: 200px;      
-            left: 5%; 
-            transform: translateX(-5%); /* Align center */
-            width: 400px; /* Adjust as needed */
-            padding: 10px;
-            background: rgba(150, 149, 241, 0.8); /* Optional: to make it stand out */
-            border-radius: 10px; /* Optional: for rounded corners */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: for a subtle shadow */
-    }
-    
-</style>
+    <meta charset="UTF-8">
+    <title>Interactive Minkowski Diagram</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        body { margin: 0; overflow: hidden; background: linear-gradient(to right, #c9c2f1, #a28fe6);}
+        canvas { display: block; background-color: #fff; margin: auto; padding: 0; position: absolute; left: 0; right: 0;top: 0; bottom: 0;}
+
+        .header {
+                position: absolute;
+                top: 10px;
+                left: 20px;
+                font-size: 24px;
+                font-weight: bold;
+        }
+        #slider-container{
+                position: relative;
+                top: 100px;      
+                left: 3%; 
+                transform: translateX(-5%); /* Align center */
+                width: 260px; /* Adjust as needed */
+                padding: 10px;
+                background: rgba(150, 149, 241, 0.8); /* Optional: to make it stand out */
+                border-radius: 10px; /* Optional: for rounded corners */
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: for a subtle shadow */
+        }
+
+    </style>
 </head>
 <body>
     <div class="header">Minkowski Space-Time Diagram</div>
     <canvas id="minkowski"></canvas>
-    <div class="slider" style="top: 100px; left: 200px; width: 200px;">
-        <input type="range" id="scaleSlider" min="1" max="100" value="1" step="0.01">
-        <label for="scaleSlider">Scale: <span id="scaleValue">1</span></label>
-    </div>
-    <div class="slider" style="top: 150px; left: 200px; width: 200px;">
-        <input type="range" id="speedSlider" min="-0.9" max="0.9" value="0" step="0.01">
-        <label for="speedSlider"><span id="speedValue">0</span>c</label>
-    </div>
     <div id="slider-container"></div>
+    <script src="math.js"></script>
+    <script src="cats.js"></script>
+    <script src="sliders.js"></script>
     <script src="diagram.js"></script>
+    
 </body>
 </html>
