@@ -24,15 +24,39 @@
                 padding: 10px;
                 background: rgba(150, 149, 241, 0.8); /* Optional: to make it stand out */
                 border-radius: 10px; /* Optional: for rounded corners */
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: for a subtle shadow */
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
         }
+        .button-row {
+                display: flex;
+                justify-content: space-between; /* Distribute space evenly between buttons */
+                padding: 10px; /* Optional: for some spacing */
+        }
+
+        .tab-button {
+                flex-grow: 1; /* Optional: makes buttons expand to fill the space */
+                text-align: center; /* Center the text inside buttons */
+                margin: 0 5px; /* Optional: adds a little space between buttons */
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .selected {
+                background-color: #f39339; /* Example color for selected state */
+                color: white;
+                /* Add other styles as needed */
+        }
+
 
     </style>
 </head>
 <body>
     <div class="header">Minkowski Space-Time Diagram</div>
     <canvas id="minkowski"></canvas>
-    <div id="slider-container"></div>
+    <div id="slider-container">
+        <div class="button-row">
+            <button class="tab-button selected" onclick="selectTab(event, 'Tab1')">Mode 1</button>
+            <button class="tab-button" onclick="selectTab(event, 'Tab2')">Mode 2</button>
+            <button class="tab-button" onclick="selectTab(event, 'Tab3')">Mode 3</button>
+        </div>
+    </div>
     <script src="math.js"></script>
     <script src="cats.js"></script>
     <script src="sliders.js"></script>

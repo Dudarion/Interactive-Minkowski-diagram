@@ -31,6 +31,7 @@ function createSliderWithHeader(containerId, headerText, min, max, initialValue,
     sliderWrapper.appendChild(valueIndicator);
 
     sliders[uniqueId] = slider;
+    slider.value = initialValue;
 
     // Update Value Indicator on Slider Change
     slider.oninput = function() {
@@ -38,7 +39,7 @@ function createSliderWithHeader(containerId, headerText, min, max, initialValue,
         handler();
     };
     
-
+    slider.value = initialValue;
     // // Remove Button
     // const removeButton = document.createElement('button');
     // removeButton.textContent = 'Remove';
@@ -48,6 +49,7 @@ function createSliderWithHeader(containerId, headerText, min, max, initialValue,
     // sliderWrapper.appendChild(removeButton);
     return uniqueId;
 }
+
 
 function removeSlider(sliderId) {
     const sliderToRemove = document.getElementById(sliderId);
@@ -81,4 +83,26 @@ function addCheckbox(containerId, label, checkboxId, handler) {
     container.appendChild(checkboxLabel);
 
     return checkbox;
+}
+
+
+function selectTab(event, tabId) {
+    var tabButtons = document.querySelectorAll('.tab-button');
+    
+    // Remove the 'selected' class from all tab buttons
+    tabButtons.forEach(function(button) {
+        button.classList.remove('selected');
+    });
+
+    // Add the 'selected' class to the clicked button
+    event.currentTarget.classList.add('selected');
+
+    zoom_checkbox.checked = false;
+    if(tabId == "Tab1") MODE = 1;
+    else if(tabId == "Tab2") MODE = 2;
+    else if(tabId == "Tab3") MODE = 3;
+
+    console.log("Mode: ", MODE);
+    
+    update();
 }
