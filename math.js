@@ -32,3 +32,4 @@ function distributePointsOnLine(startPoint, endPoint, numPoints) {
 
     return points;
 }
+

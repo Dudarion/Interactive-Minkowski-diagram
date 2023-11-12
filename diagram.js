@@ -1,6 +1,6 @@
 const canvas = document.getElementById('minkowski');
 const ctx = canvas.getContext('2d');
-const [running_cat, sleeping_cat] = init_cats();
+const [running_cat, sleeping_cat, arrow] = init_cats();
 
 
 let HEIGHT = Math.min(window.innerHeight, window.innerWidth) * 0.9;
@@ -16,24 +16,32 @@ let spacing = canvas.height / 20;
 let MODE = 1;
 
 // createButtons('slider-container');
-let scale_slider_id = createSliderWithHeader('slider-container', 'Scale', 1, 100, 1, 0.01, '', update);
-let obj_slider_id = createSliderWithHeader('slider-container', 'Object speed', -0.99, 0.99, 0.5, 0.01, ' c', update);
-let frame_speed_slider_id = createSliderWithHeader('slider-container', 'Frame speed', -0.99, 0.99, 0, 0.01, ' c', update);
-let triangle_checkbox = addCheckbox('slider-container', " Triangle", 1, update);
-let zoom_checkbox = addCheckbox('slider-container', " Zoom", 2, update);
+let scale_slider = new createSlider('slider-container', 'Scale', 1, 100, 1, 0.01, '', update);
+let frame_speed_slider =  new createSlider('slider-container', 'Frame speed', -0.99, 0.99, 0, 0.01, ' c', update);
+let obj_slider =  new createSlider('slider-container', 'Object speed', -0.99, 0.99, 0.5, 0.01, ' c', update);
+let triangle_checkbox = new createCheckbox('slider-container', " Triangle", 1, update);
+let zoom_checkbox = new createCheckbox('slider-container', " Zoom", 2, update);
 
 // Call resizeCanvas initially to ensure proper sizing
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas(); // This ensures the canvas is sized before the first draw
 
 
-function update(){
-    horizontalScale = ((parseFloat(sliders[scale_slider_id].value)-1) ** 5 / 10000000) + 1;
-    objectSpeed = parseFloat(sliders[obj_slider_id].value);
-    frameSpeed = parseFloat(sliders[frame_speed_slider_id].value);
+function update(slider_inst=NaN){
+    horizontalScale = ((scale_slider.value-1) ** 5 / 10000000) + 1;
+    objectSpeed = obj_slider.value;
+    frameSpeed = frame_speed_slider.value;
+    // console.log("scale ", horizontalScale);
+
+    if(slider_inst == "Frame speed"){
+        frame_speed_slider.set_range(horizontalScale);
+    }
+    else if(slider_inst == "Object speed"){
+        obj_slider.set_range(horizontalScale);
+    }
 
     
-    if(Math.abs(objectSpeed) < 0.05) objectSpeed = 0;
+    if(Math.abs(objectSpeed) < 0.05/horizontalScale) objectSpeed = 0;
 
     triangleChecked = triangle_checkbox.checked;
     zoomChecked = zoom_checkbox.checked;
@@ -62,7 +70,7 @@ function drawMinkowski() {
     if(zoomChecked) spacing = canvas.height / 10;
     else spacing = canvas.height / 20;
 
-    console.log("spacing", spacing);
+    // console.log("spacing", spacing);
     // Grid
     drawGrid();
 
@@ -77,7 +85,7 @@ function drawMinkowski() {
     drawLine([-10, 0], [10, 0], 'black', 3);
 
     if (MODE == 1){ // running and sleeping
-        if(Math.abs(frameSpeed) < 0.05) frameSpeed = 0;
+        if(Math.abs(frameSpeed) < 0.05/horizontalScale) frameSpeed = 0;
 
         sum_speed = vel_addition(frameSpeed, -objectSpeed);
         sleeping_points = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, frameSpeed, 'red', sleeping = true);
@@ -102,7 +110,7 @@ function drawMinkowski() {
 
     else if (MODE == 3){ // long cat
         sum_speed = vel_addition(frameSpeed, -objectSpeed);
-        drawSegmentWithLongCats(ctx, [0, -10], [0, 10], 11, sum_speed, 'blue', sum_speed);
+        drawSegmentWithLongArrows(ctx, [0, -10], [0, 10], 9, sum_speed);
     }
 
 
