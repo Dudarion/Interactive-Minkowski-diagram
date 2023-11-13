@@ -130,6 +130,77 @@ class createCheckbox{
 
 
 
+
+
+
+class createSwitch{
+    constructor(containerId, handler){
+        const container = document.getElementById(containerId);
+
+        this.handler = handler;
+
+        this.header = document.createElement('h4');
+        this.header.textContent = 'Length measurement:\n';
+    
+        // Create a wrapper for the label and switch for flex alignment
+        const wrapper = document.createElement('div');
+        wrapper.style.display = 'flex';
+        wrapper.style.alignItems = 'center'; // Align items vertically
+    
+        // Create the text label
+        this.label = document.createElement('label');
+        this.label.textContent = "Local time";
+        this.label.style.marginLeft = '10px'; // Add some spacing
+    
+        // Create the switch (same as before)
+        this.switchLabel = document.createElement('label');
+        this.switchLabel.className = 'switch';
+        this.switchInput = document.createElement('input');
+        this.switchInput.type = 'checkbox';
+        this.switchSlider = document.createElement('span');
+        this.switchSlider.className = 'slider round';
+    
+        // Construct the elements
+        this.switchLabel.appendChild(this.switchInput);
+        this.switchLabel.appendChild(this.switchSlider);
+        
+        wrapper.appendChild(this.switchLabel);
+        wrapper.appendChild(this.label);
+    
+        // Append the wrapper to the container
+        container.appendChild(this.header);
+        container.appendChild(wrapper);
+
+        this.switchInput.addEventListener('change', this.onChangeHandler);
+
+        this.hide(true);
+    }
+
+    get checked(){
+        return this.switchInput.checked;
+    }
+
+    set(val){
+        this.switchInput.checked = val;
+    }   
+
+    onChangeHandler = () =>  {
+        let checked = this.switchInput.checked;
+        if(checked) this.label.textContent = "Global time";
+        else this.label.textContent = "Local time";
+        this.handler();
+    }
+
+    hide(bool){
+        this.switchInput.hidden = bool;
+        this.header.hidden = bool;
+        this.label.hidden = bool;
+        this.switchLabel.hidden = bool;
+        this.switchSlider.hidden = bool;
+    }
+}
+
+
 function selectTab(event, tabId) {
     var tabButtons = document.querySelectorAll('.tab-button');
     
@@ -145,30 +216,60 @@ function selectTab(event, tabId) {
 
     if(tabId == "Tab1") { // running and sleeping
         MODE = 1;
+        scale_slider.set(1);
+        lightcone = true;
         frame_speed_slider.set(0);
         obj_slider.set(0.5);
         obj_slider.hide(false);
+        switcher.hide(true);
         triangle_checkbox.hide(false);
         frame_speed_slider.hide(false);
+        clocks_checkbox.hide(false);
+        clocks_checkbox.set(false);
     }
 
     else if(tabId == "Tab2") { // many cats
         MODE = 2;
+        scale_slider.set(1);
+        lightcone = true;
         frame_speed_slider.set(0);
         frame_speed_slider.set_range(2);
         obj_slider.hide(true);
+        switcher.hide(true);
         triangle_checkbox.hide(true);
         frame_speed_slider.hide(false);
+        clocks_checkbox.hide(false);
+        clocks_checkbox.set(false);
     }
 
     else if(tabId == "Tab3") { // arrows
         MODE = 3;
+        scale_slider.set(1);
+        lightcone = false;
         frame_speed_slider.set(0);
         obj_slider.set(0);
         obj_slider.hide(false);
         frame_speed_slider.set(0);
         frame_speed_slider.hide(true);
         triangle_checkbox.hide(false);
+        switcher.hide(false);
+        clocks_checkbox.hide(true);
+        clocks_checkbox.set(true);
+    }
+
+    else if(tabId == "Tab4") { // galaxy
+        MODE = 4;
+        scale_slider.set(1);
+        lightcone = false;
+        frame_speed_slider.set(0);
+        obj_slider.set(0);
+        obj_slider.hide(true);
+        frame_speed_slider.set(0);
+        frame_speed_slider.hide(false);
+        triangle_checkbox.hide(false);
+        switcher.hide(true);
+        clocks_checkbox.hide(false);
+        clocks_checkbox.set(true);
     }
 
     console.log("Mode: ", MODE);

@@ -1,6 +1,6 @@
 const canvas = document.getElementById('minkowski');
 const ctx = canvas.getContext('2d');
-const [running_cat, sleeping_cat, arrow] = init_cats();
+const [running_cat, sleeping_cat, arrow, galaxy, watch] = init_cats();
 
 
 let HEIGHT = Math.min(window.innerHeight, window.innerWidth) * 0.9;
@@ -9,9 +9,13 @@ let HEIGHT = Math.min(window.innerHeight, window.innerWidth) * 0.9;
 let horizontalScale = 1;
 let objectSpeed = 0; // as a fraction of the speed of light
 let frameSpeed = 0;
+// let frameMovement = 0;
 let triangleChecked = false;
+let switch_checked = false;
 let zoomChecked = false;
+let clocks_checked = false;
 let spacing = canvas.height / 20;
+let lightcone = true;
 
 let MODE = 1;
 
@@ -19,8 +23,11 @@ let MODE = 1;
 let scale_slider = new createSlider('slider-container', 'Scale', 1, 100, 1, 0.01, '', update);
 let frame_speed_slider =  new createSlider('slider-container', 'Frame speed', -0.99, 0.99, 0, 0.01, ' c', update);
 let obj_slider =  new createSlider('slider-container', 'Object speed', -0.99, 0.99, 0.5, 0.01, ' c', update);
+// let frame_movement_slider =  new createSlider('slider-container', 'Frame movement', -10, 10, 0, 0.01, '', update);
 let triangle_checkbox = new createCheckbox('slider-container', " Triangle", 1, update);
 let zoom_checkbox = new createCheckbox('slider-container', " Zoom", 2, update);
+let clocks_checkbox = new createCheckbox('slider-container', " Clocks", 3, update);
+let switcher = new createSwitch('slider-container', update);
 
 // Call resizeCanvas initially to ensure proper sizing
 window.addEventListener('resize', resizeCanvas);
@@ -31,6 +38,7 @@ function update(slider_inst=NaN){
     horizontalScale = ((scale_slider.value-1) ** 5 / 10000000) + 1;
     objectSpeed = obj_slider.value;
     frameSpeed = frame_speed_slider.value;
+    // frameMovement = frame_movement_slider.value;
     // console.log("scale ", horizontalScale);
 
     if(slider_inst == "Frame speed"){
@@ -45,6 +53,8 @@ function update(slider_inst=NaN){
 
     triangleChecked = triangle_checkbox.checked;
     zoomChecked = zoom_checkbox.checked;
+    switch_checked = switcher.checked;
+    clocks_checked = clocks_checkbox.checked;
 
     drawMinkowski();
 }
@@ -60,12 +70,25 @@ function resizeCanvas() {
 }
 
 
+function setYaxesPosition() {
+    const windowHeight = window.innerHeight;  // Get the height of the window
+    const fraction = -0.48;                    // For example, 50% of the window height
+
+    const element = document.getElementById('y-axis-label');
+    const horizontalPosition = windowHeight * fraction;
+
+    element.style.left = horizontalPosition + 'px'; // Set the left property
+}
+
+
 function drawMinkowski() {
 
     // Clear and reset the transform to avoid scaling on each draw
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     HEIGHT = Math.min(window.innerHeight, window.innerWidth) * 0.9;
+
+    setYaxesPosition();
 
     if(zoomChecked) spacing = canvas.height / 10;
     else spacing = canvas.height / 20;
@@ -78,8 +101,10 @@ function drawMinkowski() {
     drawHyperbolas();
 
     // Light cones
-    drawLine([-10, -10], [10, 10], 'orange', 3);
-    drawLine([-10, 10], [10, -10], 'orange', 3);
+    if(lightcone){
+        drawLine([-10, -10], [10, 10], 'orange', 3);
+        drawLine([-10, 10], [10, -10], 'orange', 3);
+    }
 
     // Horizontal and vertical axes
     drawLine([-10, 0], [10, 0], 'black', 3);
@@ -88,8 +113,8 @@ function drawMinkowski() {
         if(Math.abs(frameSpeed) < 0.05/horizontalScale) frameSpeed = 0;
 
         sum_speed = vel_addition(frameSpeed, -objectSpeed);
-        sleeping_points = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, frameSpeed, 'red', sleeping = true);
-        running_points = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, sum_speed, 'blue', sleeping = false);
+        sleeping_points = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, frameSpeed, 'red', 'sleeping', clocks_checked, true);
+        running_points = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, sum_speed, 'blue', 'sleeping', clocks_checked, false);
 
         if(triangleChecked){
             [x1, y1] = running_points[6];
@@ -101,16 +126,30 @@ function drawMinkowski() {
     }
 
     else if (MODE == 2){ // many cats
-        drawSegmentWithCats(ctx, [0, -10], [0, 10], 11, frameSpeed, 'blue', sleeping=true);
-        drawSegmentWithCats(ctx, [4, -10], [4, 10], 11, frameSpeed, 'blue', sleeping = true);
-        drawSegmentWithCats(ctx, [-4, -10], [-4, 10], 11, frameSpeed, 'blue', sleeping = true);
-        drawSegmentWithCats(ctx, [8, -10], [8, 10], 11, frameSpeed, 'blue', sleeping = true);
-        drawSegmentWithCats(ctx, [-8, -10], [-8, 10], 11, frameSpeed, 'blue', sleeping = true);
+        drawSegmentWithCats(ctx, [0, -10], [0, 10], 11, frameSpeed, 'blue', 'sleeping', clocks_checked);
+        drawSegmentWithCats(ctx, [4, -10], [4, 10], 11, frameSpeed, 'blue', 'sleeping', clocks_checked);
+        drawSegmentWithCats(ctx, [-4, -10], [-4, 10], 11, frameSpeed, 'blue', 'sleeping', clocks_checked);
+        drawSegmentWithCats(ctx, [8, -10], [8, 10], 11, frameSpeed, 'blue', 'sleeping', clocks_checked);
+        drawSegmentWithCats(ctx, [-8, -10], [-8, 10], 11, frameSpeed, 'blue', 'sleeping', clocks_checked);
     }
 
     else if (MODE == 3){ // long cat
         sum_speed = vel_addition(frameSpeed, -objectSpeed);
-        drawSegmentWithLongArrows(ctx, [0, -10], [0, 10], 9, sum_speed);
+        drawSegmentWithLongArrows(ctx, [0, -10], [0, 10], 11, sum_speed, triangleChecked, switch_checked);
+    }
+
+    else if (MODE == 4){ // galaxy
+        drawLine([0, -10], [0, 10], 'black', 3);
+        sleeping_points = drawSegmentWithCats(ctx, [0, -10], [0, 10], 21, frameSpeed, 'red', 'sleeping', clocks_checked);
+        galaxy_points = drawSegmentWithCats(ctx, [7, -14], [7, 14], 29, frameSpeed, 'red', 'galaxy', clocks_checked, false);
+        if(triangleChecked){
+            let [x1, y1] = galaxy_points[0];
+            let [x2, y2] = galaxy_points[1];
+            new_right_x = ((- y1) * (x2 - x1) / (y2 - y1)) + x1;
+            new_right_y = y1 - x1*(y2 - y1) / (x2 - x1);
+            drawLine([0, 0], [new_right_x, 0], 'green', 6);
+            drawLine([0, 0], [0, new_right_y], 'blue', 6);
+        }
     }
 
 
@@ -128,7 +167,6 @@ function convertCanvas(x, y){
     let new_y = canvas.height/2 - y*spacing + zoomChecked*spacing*5;
     return [new_x, new_y];
 }
-
 
 function MT(x, y){ // in spacings (light seconds)
     [new_x, new_y] = convertCanvas(x, y);
@@ -176,7 +214,7 @@ function drawHyperbolas() {
     let x_step = maxRange / 100;
   
     // Time-like hyperbolas (ct)^2 - x^2 = a^2
-    for (let a = 1; a < 10; a += 1) {
+    for (let a = 0; a < 10; a += 1) {
         ctx.beginPath(); // upper
         MT(-maxRange, Math.sqrt(maxRange * maxRange + a * a));
         for (let x = -maxRange; x <= maxRange; x += x_step) {

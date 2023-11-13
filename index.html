@@ -6,55 +6,176 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <style>
         body { margin: 0; overflow: hidden; background: linear-gradient(to right, #c9c2f1, #a28fe6);}
-        canvas { display: block; background-color: #fff; margin: auto; padding: 0; position: absolute; left: 0; right: 0;top: 0; bottom: 0;}
+        canvas { 
+            display: block; 
+            background-color: #fff; 
+            margin: auto; 
+            padding: 0; 
+            position: relative; 
+            top: 29%;
+            /* bottom: 10%; */
+            /* left: 0; 
+            right: 0;
+            top: 0; 
+            bottom: 0; */
+        }
 
         .header {
-                position: absolute;
-                top: 10px;
-                left: 20px;
-                font-size: 24px;
-                font-weight: bold;
+            position: absolute;
+            top: 40px;
+            left: 4%;
+            font-size: 24px;
+            font-weight: bold;
         }
         #slider-container{
-                position: relative;
-                top: 100px;      
-                left: 3%; 
-                transform: translateX(-5%); /* Align center */
-                width: 260px; /* Adjust as needed */
-                padding: 10px;
-                background: rgba(150, 149, 241, 0.8); /* Optional: to make it stand out */
-                border-radius: 10px; /* Optional: for rounded corners */
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+            position: absolute;
+            top: 100px; 
+            margin-top: 0px;     
+            left: 3%; 
+            /* transform: translateX(-5%); Align center */
+            width: 260px; /* Adjust as needed */
+            padding: 10px;
+            background: rgba(150, 149, 241, 0.8); /* Optional: to make it stand out */
+            border-radius: 10px; /* Optional: for rounded corners */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
         }
         .button-row {
-                display: flex;
-                justify-content: space-between; /* Distribute space evenly between buttons */
-                padding: 10px; /* Optional: for some spacing */
+            display: flex;
+            justify-content: space-between; /* Distribute space evenly between buttons */
+            padding: 10px; /* Optional: for some spacing */
         }
 
         .tab-button {
-                flex-grow: 1; /* Optional: makes buttons expand to fill the space */
-                text-align: center; /* Center the text inside buttons */
-                margin: 0 5px; /* Optional: adds a little space between buttons */
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            flex-grow: 1; /* Optional: makes buttons expand to fill the space */
+            text-align: center; /* Center the text inside buttons */
+            margin: 0 5px; /* Optional: adds a little space between buttons */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         .selected {
-                background-color: #f39339; /* Example color for selected state */
-                color: white;
-                /* Add other styles as needed */
+            background-color: #f39339; /* Example color for selected state */
+            color: white;
+            /* Add other styles as needed */
+        }
+        .graph-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 50vh;
         }
 
+        .canvas-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
+        .axis-label {
+            text-align: center;
+            margin: 10px;
+        }
+
+        #y-axis-label {
+            position: relative;
+            font-weight: 500;
+            font-size: 220%;
+            left: -26%;
+            top: 145%;
+            transform:  rotate(-90deg);
+            /* transform: translateX(20%); */
+            /* transform-origin: left;
+            white-space: nowrap; */
+        }
+
+        #x-axis-label {
+            position: relative;
+            font-weight: 500; 
+            font-size: 220%;
+            top: 51%;
+            /* bottom: 10px; adjust based on the actual height of the label */
+            left: 1.5%;
+            transform: translateX(-50%);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        /* Hide default HTML checkbox */
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        /* The slider */
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #b16a00;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: rgb(255, 255, 255);
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+        input:checked + .slider {
+            background-color: #217ac4;  
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+
+        /* Rounded sliders */
+        .slider.round {
+            border-radius: 24px;
+        }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
     </style>
 </head>
 <body>
-    <div class="header">Minkowski Space-Time Diagram</div>
-    <canvas id="minkowski"></canvas>
+    <div class="header">Space-Time Diagram</div>
+    <div class="graph-container">
+        <div id="y-axis-label" class="axis-label">ct <span>&#8594;</span></div>
+        <div class="canvas-wrapper">
+            <canvas id="minkowski"></canvas>
+        </div>
+        <div id="x-axis-label" class="axis-label">x <span>&#8594;</span></div>
+    </div>
     <div id="slider-container">
         <div class="button-row">
             <button class="tab-button selected" onclick="selectTab(event, 'Tab1')">Mode 1</button>
             <button class="tab-button" onclick="selectTab(event, 'Tab2')">Mode 2</button>
             <button class="tab-button" onclick="selectTab(event, 'Tab3')">Mode 3</button>
+            <button class="tab-button" onclick="selectTab(event, 'Tab4')">Mode 4</button>
         </div>
     </div>
     <script src="math.js"></script>
