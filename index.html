@@ -23,9 +23,11 @@
         .header {
             position: absolute;
             top: 30px;
-            left: 46%;
+            left: 50%;
             font-size: 24px;
             font-weight: bold;
+            transform: translateX(-50%);
+            
         }
         #slider-container{
             position: absolute;
@@ -39,6 +41,7 @@
             border-radius: 10px; /* Optional: for rounded corners */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
         }
+
         .button-row {
             display: flex;
             justify-content: space-between; /* Distribute space evenly between buttons */
@@ -96,6 +99,31 @@
             /* bottom: 10px; adjust based on the actual height of the label */
             left: 1.5%;
             transform: translateX(-50%);
+        }
+
+        @media screen and (orientation: portrait) { /* This targets screens where height > width */
+            #slider-container {
+                position: absolute;
+                /* bottom: 10%;  */
+                top: 65%;
+                margin-top: 0px;     
+                left: 3%; 
+                /* transform: translateX(-5%); Align center */
+                width: 320px; /* Adjust as needed */
+                padding: 10px;
+                background: rgba(150, 149, 241, 0.8); /* Optional: to make it stand out */
+                border-radius: 10px; /* Optional: for rounded corners */
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+            }
+
+            #x-axis-label {
+                position: relative;
+                font-weight: 500; 
+                font-size: 220%;
+                left: 5%;
+                top: 25%;
+                transform: translateX(-50%);
+            }
         }
 
         .switch {
