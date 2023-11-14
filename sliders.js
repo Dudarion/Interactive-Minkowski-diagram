@@ -87,6 +87,15 @@ class createSlider{
 }
 
 
+function createHeader(containerId, text){
+    const container = document.getElementById(containerId);
+    header = document.createElement('h2');
+    header.textContent = text;
+    container.appendChild(this.header);
+    return header;
+}
+
+
 class createCheckbox{
     constructor(containerId, label, checkboxId, handler){
         // Find the container where the checkbox will be added
@@ -134,13 +143,15 @@ class createCheckbox{
 
 
 class createSwitch{
-    constructor(containerId, handler){
+    constructor(containerId, header_text, text_1, text_2, handler){
         const container = document.getElementById(containerId);
 
         this.handler = handler;
+        this.text_1 = text_1;
+        this.text_2 = text_2;
 
         this.header = document.createElement('h4');
-        this.header.textContent = 'Length measurement:\n';
+        this.header.textContent = header_text;
     
         // Create a wrapper for the label and switch for flex alignment
         const wrapper = document.createElement('div');
@@ -149,7 +160,7 @@ class createSwitch{
     
         // Create the text label
         this.label = document.createElement('label');
-        this.label.textContent = "Local time";
+        this.label.textContent = text_1;
         this.label.style.marginLeft = '10px'; // Add some spacing
     
         // Create the switch (same as before)
@@ -168,7 +179,7 @@ class createSwitch{
         wrapper.appendChild(this.label);
     
         // Append the wrapper to the container
-        container.appendChild(this.header);
+        if(header_text) container.appendChild(this.header);
         container.appendChild(wrapper);
 
         this.switchInput.addEventListener('change', this.onChangeHandler);
@@ -185,9 +196,11 @@ class createSwitch{
     }   
 
     onChangeHandler = () =>  {
-        let checked = this.switchInput.checked;
-        if(checked) this.label.textContent = "Global time";
-        else this.label.textContent = "Local time";
+        if(this.text_2 != false){
+            let checked = this.switchInput.checked;
+            if(checked) this.label.textContent = this.text_2;
+            else this.label.textContent = this.text_1;
+        }
         this.handler();
     }
 
@@ -213,62 +226,65 @@ function selectTab(event, tabId) {
     event.currentTarget.classList.add('selected');
 
     zoom_checkbox.set(false);
+    triangle_checkbox.set(false);
+    globalShift = false; 
+    lightcone = true;
+    clocks_checkbox.set(false);
+    scale_slider.set(1);
+    frame_speed_slider.hide(false);
+    frame_speed_slider.set(0);
+    length_switcher.hide(true);
+    clocks_checkbox.hide(false);
 
     if(tabId == "Tab1") { // running and sleeping
         MODE = 1;
-        scale_slider.set(1);
-        lightcone = true;
-        frame_speed_slider.set(0);
+        mode_header.textContent = "Coordinate transform";;
         obj_slider.set(0.5);
         obj_slider.hide(false);
-        switcher.hide(true);
         triangle_checkbox.hide(false);
-        frame_speed_slider.hide(false);
-        clocks_checkbox.hide(false);
-        clocks_checkbox.set(false);
     }
 
-    else if(tabId == "Tab2") { // many cats
+    if(tabId == "Tab2") { // Twins paradox
         MODE = 2;
-        scale_slider.set(1);
-        lightcone = true;
-        frame_speed_slider.set(0);
+        mode_header.textContent = "Twins paradox";
+        obj_slider.set(0.72);
+        obj_slider.hide(false);
+        globalShift = true; 
+        zoom_checkbox.hide(true);
+        triangle_checkbox.hide(true);
+        clocks_checkbox.set(true);
+    }
+
+    else if(tabId == "Tab3") { // many cats
+        MODE = 3;
+        mode_header.textContent = "Relativity of simultaneity";
         frame_speed_slider.set_range(2);
         obj_slider.hide(true);
-        switcher.hide(true);
         triangle_checkbox.hide(true);
-        frame_speed_slider.hide(false);
-        clocks_checkbox.hide(false);
-        clocks_checkbox.set(false);
     }
 
-    else if(tabId == "Tab3") { // arrows
-        MODE = 3;
-        scale_slider.set(1);
+    else if(tabId == "Tab4") { // arrows
+        MODE = 4;
+        mode_header.textContent = "Length contraction";
         lightcone = false;
-        frame_speed_slider.set(0);
         obj_slider.set(0);
         obj_slider.hide(false);
         frame_speed_slider.set(0);
         frame_speed_slider.hide(true);
         triangle_checkbox.hide(false);
-        switcher.hide(false);
+        length_switcher.hide(false);
         clocks_checkbox.hide(true);
         clocks_checkbox.set(true);
     }
 
-    else if(tabId == "Tab4") { // galaxy
-        MODE = 4;
-        scale_slider.set(1);
+    else if(tabId == "Tab5") { // galaxy
+        MODE = 5;
+        mode_header.textContent = "Fast travel";
         lightcone = false;
-        frame_speed_slider.set(0);
         obj_slider.set(0);
         obj_slider.hide(true);
         frame_speed_slider.set(0);
-        frame_speed_slider.hide(false);
         triangle_checkbox.hide(false);
-        switcher.hide(true);
-        clocks_checkbox.hide(false);
         clocks_checkbox.set(true);
     }
 

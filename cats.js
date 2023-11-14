@@ -1,7 +1,8 @@
-
 function init_cats(){
     const running_cat = new Image();
     running_cat.src = 'running_cat_small.png';
+    const running_flipped = new Image();
+    running_flipped.src = 'running_flipped.png';
     const sleeping_cat = new Image();
     sleeping_cat.src = 'sleeping_small.png';
     const arrow = new Image();
@@ -11,6 +12,9 @@ function init_cats(){
     const watch = new Image();
     watch.src = 'watch.png';
     running_cat.onload = function () { 
+        drawMinkowski();
+    }
+    running_flipped.onload = function () { 
         drawMinkowski();
     }
     sleeping_cat.onload = function () { 
@@ -25,10 +29,10 @@ function init_cats(){
     watch.onload = function () { 
         drawMinkowski();
     }
-    return [running_cat, sleeping_cat, arrow, galaxy, watch];
+    return [running_cat, running_flipped, sleeping_cat, arrow, galaxy, watch];
 }
 
-function draw_cat(ctx, x, y, type)
+function draw_cat(ctx, x, y, type, inverse=false)
 {
     let [new_x, new_y] = convertCanvas(x, y);
     let cat;
@@ -38,7 +42,8 @@ function draw_cat(ctx, x, y, type)
         desired_width = spacing * 0.8 / (zoomChecked+1);
     }
     else if(type == "running"){
-        cat = running_cat;
+        if(inverse) cat = running_flipped;
+        else cat = running_cat;
         desired_width = spacing * 1.2 / (zoomChecked+1);
     }
     else if(type == "galaxy"){
@@ -62,24 +67,26 @@ function draw_watch(ctx, x, y, time){
 }
 
 
-function drawSegmentWithCats(ctx, p1, p2, num, speed, color, type, clock, left=true) {
+function drawSegmentWithCats(ctx, p1, p2, num, speed, color, type, inverse=false, skip_first=false) {
     const L_p1 = Lorentz(p1, speed);
     const L_p2 = Lorentz(p2, speed);
     drawLine(L_p1, L_p2, color, 3);
     
     const points = distributePointsOnLine(L_p1, L_p2, num);
-    for (let i = 0; i < points.length; i++) {
-        draw_cat(ctx, points[i][0], points[i][1], type);
-        if(clock){
-            shift = (left - 0.5) * 2/horizontalScale;
-            let local_time = (i-Math.floor(num/2))*2;
-            if(p1[1] == 0) local_time = i;
-            // drawCIrcle(ctx, points[i][0]-shift, points[i][1], 10, 'blue');
-            // drawText(ctx, points[i][0]-shift, points[i][1], local_time);
-            draw_watch(ctx, points[i][0]-shift, points[i][1], local_time);
-        }
+    for (let i = 1*skip_first; i < points.length; i++) {
+        draw_cat(ctx, points[i][0], points[i][1], type, inverse);
     }
     return points;
+}
+
+
+function draw_clocks(ctx, points, left=true, step=1, init=0){
+    shift = (left - 0.5) * 2/horizontalScale;
+    
+    for (let cc=0; cc < points.length; cc++){
+        let time = (step * cc) + init;
+        draw_watch(ctx, points[cc][0]-shift, points[cc][1], time);
+    }
 }
 
 
