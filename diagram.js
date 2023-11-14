@@ -21,7 +21,7 @@ let lightcone = true;
 
 let MODE = 1;
 
-let mode_header = createHeader('slider-container', '');
+let mode_header = createHeader('slider-container', "Coordinate transform");
 let scale_slider = new createSlider('slider-container', 'Scale', 1, 100, 1, 0.01, '', update);
 let frame_speed_slider =  new createSlider('slider-container', 'Frame speed', -0.99, 0.99, 0, 0.01, ' c', update);
 let obj_slider =  new createSlider('slider-container', 'Object speed', -0.99, 0.99, 0.5, 0.01, ' c', update);
@@ -113,7 +113,10 @@ function drawMinkowski() {
     drawLine([-10, 0], [10, 0], 'black', 3);
 
     if (MODE == 1){ // running and sleeping
-        if(Math.abs(frameSpeed) < 0.05/horizontalScale) frameSpeed = 0;
+        if(Math.abs(frameSpeed) < 0.05/horizontalScale) {
+            frame_speed_slider.set(0);
+            frameSpeed = 0;
+        }
 
         sum_speed_forward = vel_addition(frameSpeed, -objectSpeed);
         
@@ -135,6 +138,11 @@ function drawMinkowski() {
     }
 
     else if (MODE == 2){ // twins paradox
+        if(Math.abs(frameSpeed) < 0.05/horizontalScale) {
+            frame_speed_slider.set(0);
+            frameSpeed = 0;
+        }
+
         sum_speed_forward = vel_addition(frameSpeed, -objectSpeed);
         sum_speed_backward = vel_addition(frameSpeed, +objectSpeed);
 
@@ -170,6 +178,11 @@ function drawMinkowski() {
     }
 
     else if (MODE == 5){ // galaxy
+        if(Math.abs(frameSpeed) < 0.05/horizontalScale) {
+            frame_speed_slider.set(0);
+            frameSpeed = 0;
+        }
+        
         drawLine([0, -10], [0, 10], 'black', 3);
 
         sleeping_points = drawSegmentWithCats(ctx, [0, -10], [0, 10], 21, frameSpeed, 'red', 'sleeping');

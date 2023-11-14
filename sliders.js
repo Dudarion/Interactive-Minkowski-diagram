@@ -82,6 +82,7 @@ class createSlider{
         this.slider.step = this.init_step / scale;
         if(scale > 100) this.label_mult = true;
         else this.label_mult = false;
+        // if(scale == 1) this.set(0);
         this.update_label();
     }
 }
@@ -136,10 +137,6 @@ class createCheckbox{
         this.checkboxLabel.hidden = bool;
     }
 }
-
-
-
-
 
 
 class createSwitch{
@@ -238,7 +235,7 @@ function selectTab(event, tabId) {
 
     if(tabId == "Tab1") { // running and sleeping
         MODE = 1;
-        mode_header.textContent = "Coordinate transform";;
+        mode_header.textContent = "Coordinate transform";
         obj_slider.set(0.5);
         obj_slider.hide(false);
         triangle_checkbox.hide(false);
@@ -258,7 +255,7 @@ function selectTab(event, tabId) {
     else if(tabId == "Tab3") { // many cats
         MODE = 3;
         mode_header.textContent = "Relativity of simultaneity";
-        frame_speed_slider.set_range(2);
+        // frame_speed_slider.set_range(2);
         obj_slider.hide(true);
         triangle_checkbox.hide(true);
     }
