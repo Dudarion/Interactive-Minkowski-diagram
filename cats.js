@@ -62,8 +62,8 @@ function draw_cat(ctx, x, y, type, inverse=false)
 
 function draw_watch(ctx, x, y, time){
     let [new_x, new_y] = convertCanvas(x, y);
-    ctx.drawImage(watch, new_x-watch.width*0.7/2, new_y-watch.height*0.7/2, watch.width*0.7, watch.height*0.7);
-    drawText(ctx, x, y-0.05, time);
+    ctx.drawImage(watch, new_x-watch.width*0.7/2, new_y-watch.height*0.75/2, watch.width*0.7, watch.height*0.7);
+    drawText(ctx, x, y-0.04, time);
 }
 
 
@@ -112,8 +112,10 @@ function drawSegmentWithLongArrows(ctx, p1, p2, num, speed, triangle, switcher) 
         let [left_x, left_y] = points[i];
         let [right_x, right_y] = points2[i];
 
-        draw_watch(ctx, left_x, left_y, (i-5)*2);
-        draw_watch(ctx, right_x, right_y, (i-5)*2);
+        draw_watch(ctx, left_x-0.5/horizontalScale, left_y, (i-5)*2);
+        drawCIrcle(ctx, left_x, left_y, 3, 'blue');
+        draw_watch(ctx, right_x+0.5/horizontalScale, right_y, (i-5)*2);
+        drawCIrcle(ctx, right_x, right_y, 3, 'red');
 
         if(switcher){
             let [x1, y1] = points2[4];
@@ -126,9 +128,9 @@ function drawSegmentWithLongArrows(ctx, p1, p2, num, speed, triangle, switcher) 
             right_x = new_right_x;
         }
 
-        arrow_x = (left_x + right_x) / 2 - 0.05;
+        arrow_x = (left_x + right_x) / 2 - 0.05/horizontalScale;
         arrow_y = (left_y + right_y) / 2;
-        arrow_length = Math.sqrt((right_x - left_x)**2 + (right_y - left_y)**2)-0.3;
+        arrow_length = Math.sqrt((right_x - left_x)**2 + (right_y - left_y)**2);
         arrow_angle = Math.atan2(-right_y + left_y, (right_x - left_x) * horizontalScale);
 
         draw_arrow(ctx, arrow_x, arrow_y, arrow_length, arrow_angle);
@@ -150,7 +152,7 @@ function draw_arrow(ctx, x, y, length, angle){
     desired_width = spacing*horizontalScale * length;
     new_x = new_x - desired_width/2;
     // ratio = arrow.height / arrow.width;
-    height_scale = 0.4;
+    height_scale = 0.3;
     new_y = new_y - arrow.height * height_scale/2;
 
     let scale = desired_width / arrow.width;
@@ -173,13 +175,13 @@ function drawText(ctx, x, y, text){
 }
 
 
-// function drawCIrcle(ctx, x, y, rad, color){
-//     ctx.beginPath();
-//     ctx.strokeStyle = color;
-//     ctx.lineWidth = rad+2;
-//     [new_x, new_y] = convertCanvas(x, y);
-//     ctx.arc(new_x, new_y, rad, 0, 2 * Math.PI);
-//     ctx.fillStyle = color;
-//     ctx.fill();
-//     ctx.stroke();
-// }
+function drawCIrcle(ctx, x, y, rad, color){
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = rad+2;
+    [new_x, new_y] = convertCanvas(x, y);
+    ctx.arc(new_x, new_y, rad, 0, 2 * Math.PI);
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.stroke();
+}
