@@ -88,6 +88,62 @@ class createSlider{
 }
 
 
+class animations{
+    constructor(containerId){
+        const container = document.getElementById(containerId);
+
+        this.running = false;
+
+        // Button Row
+        const buttonRow = document.createElement('div');
+        buttonRow.style.display = 'flex';
+        buttonRow.style.justifyContent = 'space-around';
+        buttonRow.style.width = '100%'; // Adjust width as needed
+        buttonRow.style.marginTop = '10px'; // Margin for spacing, adjust as needed
+    
+        // Create and append buttons
+        for (let i = 0; i < 3; i++) {
+            const button = document.createElement('button');
+            button.textContent = `Anim ${i + 1}`; // Customize button text as needed
+            buttonRow.appendChild(button);
+            button.addEventListener('click', (event) => this.animate(i));
+        }
+    
+        container.appendChild(buttonRow);
+    }
+
+    animate(num){
+        console.log("animate", num);
+        if(this.running) return;
+    
+        if(num == 0){
+            let currentValue = scale_slider.value;
+            if(currentValue > 50) this.scale_animation(1, -1);
+            else this.scale_animation(100, 1);
+        }       
+    }
+
+    scale_animation(target, step=1){
+        const interval = 25; // Duration in milliseconds between each increment
+
+        const intervalId = setInterval(() => {
+            this.running = true;
+            let currentValue = scale_slider.value;
+            if (currentValue != target) {
+                currentValue += step;
+                scale_slider.set(currentValue); 
+                scale_slider.oninput();
+            } else {
+                clearInterval(intervalId); // Stop the animation when max is reached
+                this.running = false;
+            }
+        }, interval);
+    }
+}
+
+
+
+
 function createHeader(containerId, text){
     const container = document.getElementById(containerId);
     header = document.createElement('h2');

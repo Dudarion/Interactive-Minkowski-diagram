@@ -21,16 +21,17 @@ let lightcone = true;
 
 let MODE = 1;
 
-let mode_header = createHeader('slider-container', "Coordinate transform");
-let scale_slider = new createSlider('slider-container', 'Scale', 1, 100, 1, 0.01, '', update);
-let frame_speed_slider =  new createSlider('slider-container', 'Frame speed', -0.99, 0.99, 0, 0.01, ' c', update);
-let obj_slider =  new createSlider('slider-container', 'Object speed', -0.99, 0.99, 0.5, 0.01, ' c', update);
-// let frame_movement_slider =  new createSlider('slider-container', 'Frame movement', -10, 10, 0, 0.01, '', update);
-let triangle_checkbox = new createCheckbox('slider-container', " Triangle", 1, update);
-let zoom_checkbox = new createCheckbox('slider-container', " Zoom", 2, update);
-let clocks_checkbox = new createCheckbox('slider-container', " Clocks", 3, update);
-let length_switcher = new createSwitch('slider-container', "Length measurement:", "Local time", "Global time", update);
-// let twins_switcher = new createSwitch('slider-container', false, "Twins paradox", false, update);
+const mode_header = createHeader('slider-container', "Coordinate transform");
+const scale_slider = new createSlider('slider-container', 'Scale', 1, 100, 1, 0.01, '', update);
+const frame_speed_slider =  new createSlider('slider-container', 'Frame speed', -0.99, 0.99, 0, 0.01, ' c', update);
+const obj_slider =  new createSlider('slider-container', 'Object speed', -0.99, 0.99, 0.5, 0.01, ' c', update);
+// const frame_movement_slider =  new createSlider('slider-container', 'Frame movement', -10, 10, 0, 0.01, '', update);
+const triangle_checkbox = new createCheckbox('slider-container', " Triangle", 1, update);
+const zoom_checkbox = new createCheckbox('slider-container', " Zoom", 2, update);
+const clocks_checkbox = new createCheckbox('slider-container', " Clocks", 3, update);
+const length_switcher = new createSwitch('slider-container', "Length measurement:", "Local time", "Global time", update);
+// const twins_switcher = new createSwitch('slider-container', false, "Twins paradox", false, update);
+const anumator = new animations('slider-container');
 
 // Call resizeCanvas initially to ensure proper sizing
 window.addEventListener('resize', resizeCanvas);
@@ -42,7 +43,7 @@ function update(slider_inst=NaN){
     objectSpeed = obj_slider.value;
     frameSpeed = frame_speed_slider.value;
     // frameMovement = frame_movement_slider.value;
-    // console.log("scale ", horizontalScale);
+    console.log("scale ", horizontalScale);
 
     if(slider_inst == "Frame speed"){
         frame_speed_slider.set_range(horizontalScale);
@@ -119,7 +120,7 @@ function drawMinkowski() {
         }
 
         sum_speed_forward = vel_addition(frameSpeed, -objectSpeed);
-        
+
         let left_dir = objectSpeed < 0;
 
         sleeping_points = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, frameSpeed, 'red', 'sleeping');
@@ -182,7 +183,7 @@ function drawMinkowski() {
             frame_speed_slider.set(0);
             frameSpeed = 0;
         }
-        
+
         drawLine([0, -10], [0, 10], 'black', 3);
 
         sleeping_points = drawSegmentWithCats(ctx, [0, -10], [0, 10], 21, frameSpeed, 'red', 'sleeping');
@@ -229,26 +230,44 @@ function LT(x, y){ // in spacings (light seconds)
 
 function drawGrid(){
     // Draw grid
-    ctx.beginPath();
-    ctx.strokeStyle = '#ccc'; // Light grey for the grid lines
     ctx.lineWidth = 2;
 
-    // Vertical grid lines
-    for (let x = 0; x < 10; x += 1) {
-        MT(x, -10);
-        LT(x, 20);
-        MT(-x, -10);
-        LT(-x, 20);
+    if(horizontalScale > 150){
+        // Vertical grid lines
+        ctx.beginPath();
+        const color = 255-Math.round((horizontalScale-150)*0.318/3);
+        ctx.strokeStyle = "rgb(" + color +"," + color +"," + color +")";
+        for (let x = 0; x < 0.1; x += 0.001) {
+            MT(x, -10);
+            LT(x, 20);
+            MT(-x, -10);
+            LT(-x, 20);
+        }
+        ctx.stroke();
+    }
+
+    else{
+        // Vertical grid lines
+        ctx.beginPath();
+        ctx.strokeStyle = '#ccc'; // Light grey for the grid lines
+        for (let x = 0; x < 10; x += 1) {
+            MT(x, -10);
+            LT(x, 20);
+            MT(-x, -10);
+            LT(-x, 20);
+        }
+        ctx.stroke();
     }
 
     // Horizontal grid lines
+    ctx.beginPath();
+    ctx.strokeStyle = '#ccc'; // Light grey for the grid lines
     for (let y = 0; y < (10 + globalShift*10); y += 1) {
         MT(-10, y);
         LT(10, y);
         MT(-10, -y);
         LT(10, -y);
     }
-
     ctx.stroke();
 }
 
