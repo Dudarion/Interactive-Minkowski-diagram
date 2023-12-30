@@ -4,202 +4,12 @@
     <meta charset="UTF-8">
     <title>Interactive Minkowski Diagram</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <style>
-        body { margin: 0; overflow: hidden; background: linear-gradient(to right, #c9c2f1, #a28fe6);}
-        canvas { 
-            display: block; 
-            background-color: #fff; 
-            margin: auto; 
-            padding: 0; 
-            position: relative; 
-            top: 29%;
-        }
-
-        .header {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            font-size: 24px;
-            font-weight: bold;
-            transform: translateX(-50%);
-            
-        }
-        #slider-container{
-            position: absolute;
-            top: 100px; 
-            margin-top: 0px;     
-            left: 3%; 
-            /* transform: translateX(-5%); Align center */
-            width: 320px; 
-            padding: 10px;
-            background: rgba(150, 149, 241, 0.8); 
-            border-radius: 10px; 
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
-        }
-
-        .button-row {
-            display: flex;
-            justify-content: space-between; /* Distribute space evenly between buttons */
-            padding: 10px; /* spacing */
-        }
-
-        .tab-button {
-            flex-grow: 1; 
-            text-align: center; /* Center the text inside buttons */
-            margin: 0 5px; /* space between buttons */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .selected {
-            background-color: #f39339; 
-            color: white;
-        }
-        .graph-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 50vh;
-        }
-
-        .canvas-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .axis-label {
-            text-align: center;
-            margin: 10px;
-        }
-
-        #y-axis-label {
-            position: relative;
-            font-weight: 500;
-            font-size: 220%;
-            left: -26%;
-            top: 145%;
-            transform:  rotate(-90deg);
-            /* transform: translateX(20%); */
-            /* transform-origin: left;
-            white-space: nowrap; */
-        }
-
-        #x-axis-label {
-            position: relative;
-            font-weight: 500; 
-            font-size: 220%;
-            top: 50%;
-            /* bottom: 10px; adjust based on the actual height of the label */
-            left: 1.5%;
-            transform: translateX(-50%);
-        }
-
-        @media screen and (orientation: portrait) { /* This targets screens where height > width */
-            #slider-container {
-                position: absolute;
-                /* bottom: 10%;  */
-                top: 70%;
-                margin-top: 0px;     
-                left: 60%; 
-                /* transform: translateX(-5%); Align center */
-                width: 320px;
-                padding: 10px;
-                background: rgba(150, 149, 241, 0.8); 
-                border-radius: 10px; 
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
-            }
-
-            #x-axis-label {
-                position: relative;
-                font-weight: 500; 
-                font-size: 220%;
-                left: 5%;
-                top: 30%;
-                transform: translateX(-50%);
-                transform: translateY(-50%);
-            }
-        }
-
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 24px;
-        }
-
-        /* Hide default HTML checkbox */
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        /* The slider */
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #b16a00;
-            -webkit-transition: .4s;
-            transition: .4s;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 16px;
-            width: 16px;
-            left: 4px;
-            bottom: 4px;
-            background-color: rgb(255, 255, 255);
-            -webkit-transition: .4s;
-            transition: .4s;
-        }
-
-        input:checked + .slider {
-            background-color: #217ac4;  
-        }
-
-        input:focus + .slider {
-            box-shadow: 0 0 1px #2196F3;
-        }
-
-        input:checked + .slider:before {
-            -webkit-transform: translateX(26px);
-            -ms-transform: translateX(26px);
-            transform: translateX(26px);
-        }
-
-        /* Rounded sliders */
-        .slider.round {
-            border-radius: 24px;
-        }
-
-        .slider.round:before {
-            border-radius: 50%;
-        }
-
-        footer {
-            text-align: left;
-            padding: 15px;
-            /* background-color: #f3f3f3; Example background color */
-            position: absolute;
-            bottom: 0;
-            /* left: 2%; */
-            width: 100%;
-            font-size: 1em;
-            color: #333; /* Example text color */
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="header">Space-Time Diagram</div>
     <div class="graph-container">
-        <div id="y-axis-label" class="axis-label">ct <span>&#8594;</span></div>
+        <div id="y-axis-label" class="axis-label">t <span>&#8594;</span></div>
         <div class="canvas-wrapper">
             <canvas id="minkowski"></canvas>
         </div>
@@ -217,10 +27,10 @@
     <footer>
         2023 Made by Dima Dudarev
     </footer>
-    <script src="math.js?version=1.3"></script>
-    <script src="cats.js?version=1.3"></script>
-    <script src="sliders.js?version=1.3"></script>
-    <script src="diagram.js?version=1.3"></script>
-    
+    <script src="math.js?version=1.4"></script>
+    <script src="cats.js?version=1.4"></script>
+    <script src="sliders.js?version=1.4"></script>
+    <script src="animations.js?version=1.4"></script>
+    <script src="diagram.js?version=1.4"></script>
 </body>
 </html>

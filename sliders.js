@@ -8,7 +8,6 @@ class createSlider{
         this.init_max = max;
         this.init_step = step;
         this.init_unit = unit;
-        this.label_mult = false;
 
 
         // Slider Wrapper
@@ -42,8 +41,14 @@ class createSlider{
     }
 
     set(val){
+        // console.log(this.header.textContent, "set", val, "range:", this.slider.max);
+        
+        if ((this.header.textContent == "Frame speed") || (this.header.textContent == "Object speed")) {
+            this.set_range(horizontalScale);
+        }
         this.slider.value = val;
-        this.valueIndicator.textContent = `${val}${this.unit}`;
+        this.update_label();
+        this.handler();
     }   
 
     hide(bool){
@@ -56,10 +61,9 @@ class createSlider{
         return parseFloat(this.slider.value);
     }
 
-    update_label(){
+    update_label(label_mult){
         let val;
-        if(this.label_mult){
-            console.log("mult");
+        if(label_mult){
             this.unit = ''
             val = Math.round(this.slider.value*100000)/100;
             this.valueIndicator.textContent = `${val}${this.unit}`;
@@ -72,76 +76,32 @@ class createSlider{
     }
 
     oninput = () => {
-        this.update_label();
-        this.handler(this.header.textContent);
+        if ((this.header.textContent == "Frame speed") || (this.header.textContent == "Object speed")) {
+            this.set_range(horizontalScale);
+        }
+        else{
+            this.update_label();
+        }
+        this.handler();
+        // console.log("val", this.header.textContent, this.slider.value, this.slider.max);
     }
 
     set_range(scale){
+        
         this.slider.min = (this.init_min / scale)/1.005 + this.init_min*(1-1/1.005);
         this.slider.max = (this.init_max / scale)/1.005 + this.init_max*(1-1/1.005);
-        this.slider.step = this.init_step / scale;
-        if(scale > 100) this.label_mult = true;
-        else this.label_mult = false;
+        const new_step = this.init_step / scale;
+        let num_of_steps = (this.slider.max - this.slider.min) / new_step;
+        num_of_steps = Math.floor(num_of_steps/2) * 2;
+        this.slider.step = (this.slider.max - this.slider.min) / num_of_steps;
+        // this.slider.step = this.init_step / scale;
+        if(scale > 100) this.update_label(true);
+        else this.update_label(false);
         // if(scale == 1) this.set(0);
-        this.update_label();
+        // console.log("range", this.header.textContent, this.slider.min, this.slider.max, scale);
+        
     }
 }
-
-
-class animations{
-    constructor(containerId){
-        const container = document.getElementById(containerId);
-
-        this.running = false;
-
-        // Button Row
-        const buttonRow = document.createElement('div');
-        buttonRow.style.display = 'flex';
-        buttonRow.style.justifyContent = 'space-around';
-        buttonRow.style.width = '100%'; // Adjust width as needed
-        buttonRow.style.marginTop = '10px'; // Margin for spacing, adjust as needed
-    
-        // Create and append buttons
-        for (let i = 0; i < 3; i++) {
-            const button = document.createElement('button');
-            button.textContent = `Anim ${i + 1}`; // Customize button text as needed
-            buttonRow.appendChild(button);
-            button.addEventListener('click', (event) => this.animate(i));
-        }
-    
-        container.appendChild(buttonRow);
-    }
-
-    animate(num){
-        console.log("animate", num);
-        if(this.running) return;
-    
-        if(num == 0){
-            let currentValue = scale_slider.value;
-            if(currentValue > 50) this.scale_animation(1, -1);
-            else this.scale_animation(100, 1);
-        }       
-    }
-
-    scale_animation(target, step=1){
-        const interval = 25; // Duration in milliseconds between each increment
-
-        const intervalId = setInterval(() => {
-            this.running = true;
-            let currentValue = scale_slider.value;
-            if (currentValue != target) {
-                currentValue += step;
-                scale_slider.set(currentValue); 
-                scale_slider.oninput();
-            } else {
-                clearInterval(intervalId); // Stop the animation when max is reached
-                this.running = false;
-            }
-        }, interval);
-    }
-}
-
-
 
 
 function createHeader(containerId, text){
@@ -278,30 +238,47 @@ function selectTab(event, tabId) {
     // Add the 'selected' class to the clicked button
     event.currentTarget.classList.add('selected');
 
+    twins_animation_state = 0;
     zoom_checkbox.set(false);
     triangle_checkbox.set(false);
     globalShift = false; 
     lightcone = true;
     clocks_checkbox.set(false);
-    scale_slider.set(1);
     frame_speed_slider.hide(false);
     frame_speed_slider.set(0);
     length_switcher.hide(true);
     clocks_checkbox.hide(false);
+    light_checkbox.hide(true);
+    scale_slider.set(1);
+    for(let i=0; i<5; i++){
+        animator.buttons[i].hidden = true;
+    }
 
     if(tabId == "Tab1") { // running and sleeping
         MODE = 1;
         mode_header.textContent = "Coordinate transform";
+        
+        for(let i=0; i<5; i++){
+            animator.buttons[i].hidden = false;
+        }
+
         obj_slider.set(0.5);
         obj_slider.hide(false);
+        zoom_checkbox.hide(false);
         triangle_checkbox.hide(false);
+        light_checkbox.hide(false);
+        light_checkbox.set(false);
     }
 
     if(tabId == "Tab2") { // Twins paradox
         MODE = 2;
         mode_header.textContent = "Twins paradox";
-        obj_slider.set(0.72);
+
+        animator.buttons[0].hidden = false;
+        animator.buttons[1].hidden = false;
+
         obj_slider.hide(false);
+        obj_slider.set(twin_speed);
         globalShift = true; 
         zoom_checkbox.hide(true);
         triangle_checkbox.hide(true);
@@ -311,6 +288,10 @@ function selectTab(event, tabId) {
     else if(tabId == "Tab3") { // many cats
         MODE = 3;
         mode_header.textContent = "Relativity of simultaneity";
+
+        animator.buttons[0].hidden = false;
+        animator.buttons[1].hidden = false;
+
         // frame_speed_slider.set_range(2);
         obj_slider.hide(true);
         triangle_checkbox.hide(true);
@@ -319,6 +300,9 @@ function selectTab(event, tabId) {
     else if(tabId == "Tab4") { // arrows
         MODE = 4;
         mode_header.textContent = "Length contraction";
+
+        animator.buttons[0].hidden = false;
+
         lightcone = false;
         obj_slider.set(0);
         obj_slider.hide(false);
@@ -333,6 +317,9 @@ function selectTab(event, tabId) {
     else if(tabId == "Tab5") { // galaxy
         MODE = 5;
         mode_header.textContent = "Fast travel";
+
+        animator.buttons[0].hidden = false;
+
         lightcone = false;
         obj_slider.set(0);
         obj_slider.hide(true);

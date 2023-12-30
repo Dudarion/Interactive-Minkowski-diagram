@@ -1,6 +1,6 @@
 const canvas = document.getElementById('minkowski');
 const ctx = canvas.getContext('2d');
-const [running_cat, running_flipped, sleeping_cat, arrow, galaxy, watch] = init_cats();
+const [running_cat, running_flipped, sleeping_cat, arrow, galaxy, watch, awake_cat] = init_cats();
 
 
 let HEIGHT = Math.min(window.innerHeight, window.innerWidth) * 0.9;
@@ -14,51 +14,50 @@ let triangleChecked = false;
 let switch_checked = false;
 let twins_switch_checked = false;
 let zoomChecked = false;
+let light_checked = false;
 let globalShift = false;
 let clocks_checked = false;
 let spacing = canvas.height / 20;
 let lightcone = true;
+const twin_speed = 0.7;
+
+let half_canvas = false;
+let twins_animation_state = 0;
 
 let MODE = 1;
 
 const mode_header = createHeader('slider-container', "Coordinate transform");
 const scale_slider = new createSlider('slider-container', 'Scale', 1, 100, 1, 0.01, '', update);
-const frame_speed_slider =  new createSlider('slider-container', 'Frame speed', -0.99, 0.99, 0, 0.01, ' c', update);
-const obj_slider =  new createSlider('slider-container', 'Object speed', -0.99, 0.99, 0.5, 0.01, ' c', update);
+const frame_speed_slider =  new createSlider('slider-container', 'Frame speed', -0.99, 0.99, 0, 0.001, ' c', update);
+const obj_slider =  new createSlider('slider-container', 'Object speed', -0.99, 0.99, 0.5, 0.001, ' c', update);
 // const frame_movement_slider =  new createSlider('slider-container', 'Frame movement', -10, 10, 0, 0.01, '', update);
 const triangle_checkbox = new createCheckbox('slider-container', " Triangle", 1, update);
 const zoom_checkbox = new createCheckbox('slider-container', " Zoom", 2, update);
-const clocks_checkbox = new createCheckbox('slider-container', " Clocks", 3, update);
-const length_switcher = new createSwitch('slider-container', "Length measurement:", "Local time", "Global time", update);
+const light_checkbox = new createCheckbox('slider-container', " Speed of light cats", 3, update);
+const clocks_checkbox = new createCheckbox('slider-container', " Clocks", 4, update);
+const length_switcher = new createSwitch('slider-container', "Length measurement:", "Global time", "Local time", update);
 // const twins_switcher = new createSwitch('slider-container', false, "Twins paradox", false, update);
-const anumator = new animations('slider-container');
+const animator = new animations('slider-container');
 
 // Call resizeCanvas initially to ensure proper sizing
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas(); // This ensures the canvas is sized before the first draw
 
 
-function update(slider_inst=NaN){
+function update(){
     horizontalScale = ((scale_slider.value-1) ** 5 / 10000000) + 1;
     objectSpeed = obj_slider.value;
     frameSpeed = frame_speed_slider.value;
     // frameMovement = frame_movement_slider.value;
-    console.log("scale ", horizontalScale);
-
-    if(slider_inst == "Frame speed"){
-        frame_speed_slider.set_range(horizontalScale);
-    }
-    else if(slider_inst == "Object speed"){
-        obj_slider.set_range(horizontalScale);
-    }
-
+    // console.log("scale ", horizontalScale);
     
     if(Math.abs(objectSpeed) < 0.05/horizontalScale) objectSpeed = 0;
 
     triangleChecked = triangle_checkbox.checked;
     zoomChecked = zoom_checkbox.checked;
-    switch_checked = length_switcher.checked;
+    switch_checked = !length_switcher.checked;
     clocks_checked = clocks_checkbox.checked;
+    light_checked = light_checkbox.checked;
 
     drawMinkowski();
 }
@@ -68,7 +67,7 @@ function update(slider_inst=NaN){
 function resizeCanvas() {
     HEIGHT = Math.min(window.innerHeight, window.innerWidth) * 0.9;
     canvas.width = HEIGHT;
-    canvas.height = HEIGHT;
+    canvas.height = HEIGHT/(half_canvas+1);
     // canvas.moveTo(window.innerHeight/2, window.innerHeight/2)
     update(); 
 }
@@ -90,12 +89,16 @@ function drawMinkowski() {
     // Clear and reset the transform to avoid scaling on each draw
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
     HEIGHT = Math.min(window.innerHeight, window.innerWidth) * 0.9;
+    
+    if(half_canvas) globalShift = true;
 
     setYaxesPosition();
 
-    if(zoomChecked) spacing = canvas.height / 10;
-    else spacing = canvas.height / 20;
+    if(zoomChecked) spacing = canvas.height * (half_canvas+1) / 10;
+    else spacing = canvas.height * (half_canvas+1) / 20;
 
     // console.log("spacing", spacing);
     // Grid
@@ -111,79 +114,89 @@ function drawMinkowski() {
     }
 
     // Horizontal and vertical axes
-    drawLine([-10, 0], [10, 0], 'black', 3);
+    drawLine([-10, 0], [10, 0], 'black', 2);
 
     if (MODE == 1){ // running and sleeping
-        if(Math.abs(frameSpeed) < 0.05/horizontalScale) {
-            frame_speed_slider.set(0);
-            frameSpeed = 0;
-        }
-
-        sum_speed_forward = vel_addition(frameSpeed, -objectSpeed);
+        drawLine([0, -10], [0, 10], 'black', 2);
+        sum_speed = vel_addition(frameSpeed, -objectSpeed);
 
         let left_dir = objectSpeed < 0;
+
+        if(light_checked){
+            drawSegmentWithCats(ctx, [-30, -30], [30, 30], 61, frameSpeed, 'orange', 'running', inverse=false, skip=30);
+            drawSegmentWithCats(ctx, [30, -30], [-30, 30], 61, frameSpeed, 'orange', 'running', inverse=true, skip=30);
+            // drawSegmentWithCats(ctx, [-0.03, -30], [0.03, 30], 61, frameSpeed, 'orange', 'running', inverse=false, skip=30);
+            // drawSegmentWithCats(ctx, [0.03, -30], [-0.03, 30], 61, frameSpeed, 'orange', 'running', inverse=true, skip=30);
+        }
+
+        // if(!light_checked || Math.abs(objectSpeed) > 0.1/horizontalScale){
+        if(!light_checked && Math.abs(objectSpeed) > 0.1/horizontalScale){
+            running_points = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, sum_speed, 'blue', 'running', inverse=left_dir, skip=0);
+            if (clocks_checked) draw_clocks(ctx, running_points, left=left_dir, step=1, init=0);
+
+            if(triangleChecked){
+                [x1, y1] = running_points[6];
+                [x2, y2] = sleeping_points[6];
+                drawLine([x1, y1], [x2, y2], 'green', 4);
+                drawLine([x1, y1], [x1, y2], 'red', 4);
+                drawLine([x1, y2], [x2, y2], 'blue', 4);
+            }
+        }
 
         sleeping_points = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, frameSpeed, 'red', 'sleeping');
         if (clocks_checked) draw_clocks(ctx, sleeping_points, left=!left_dir, step=1, init=0);
-
-        running_points = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, sum_speed_forward, 'blue', 'running', inverse=left_dir, skip_first=true);
-        if (clocks_checked) draw_clocks(ctx, running_points, left=left_dir, step=1, init=0);
-
-        if(triangleChecked){
-            [x1, y1] = running_points[6];
-            [x2, y2] = sleeping_points[6];
-            drawLine([x1, y1], [x2, y2], 'green', 4);
-            drawLine([x1, y1], [x1, y2], 'red', 4);
-            drawLine([x1, y2], [x2, y2], 'blue', 4);
-        }
     }
 
     else if (MODE == 2){ // twins paradox
-        if(Math.abs(frameSpeed) < 0.05/horizontalScale) {
-            frame_speed_slider.set(0);
-            frameSpeed = 0;
-        }
-
         sum_speed_forward = vel_addition(frameSpeed, -objectSpeed);
         sum_speed_backward = vel_addition(frameSpeed, +objectSpeed);
-
         let left_dir = objectSpeed < 0;
-        sleeping_points = drawSegmentWithCats(ctx, [0, 0], [0, 20], 21, frameSpeed, 'red', 'sleeping');
-        if (clocks_checked) draw_clocks(ctx, sleeping_points, left=!left_dir, step=1, init=0);
 
-        running_points = drawSegmentWithCats(ctx, [0, 0], [0, 4], 5, sum_speed_forward, 'blue', 'running', inverse=left_dir, skip_first=true);
-        if (clocks_checked) draw_clocks(ctx, running_points, left=left_dir, step=1, init=0);
+        if(twins_animation_state == 0){
+            sleeping_points = drawSegmentWithCats(ctx, [0, 0], [0, 20], 21, frameSpeed, 'red', 'sleeping');
+            if (clocks_checked) draw_clocks(ctx, sleeping_points, left=!left_dir, step=1, init=0);
+
+            running_points = drawSegmentWithCats(ctx, [0, 0], [0, 4], 5, sum_speed_forward, 'blue', 'running', inverse=left_dir, skip=0);
+            if (clocks_checked) draw_clocks(ctx, running_points, left=left_dir, step=1, init=0);
 
 
-        rotate_point = running_points[4];
+            rotate_point = running_points[4];
+            const L_p1 = Lorentz([0, 0], sum_speed_backward);
+            const L_p2 = Lorentz([0, 4], sum_speed_backward);
+            let p1 = [L_p1[0] + rotate_point[0], L_p1[1] + rotate_point[1]];
+            let p2 = [L_p2[0] + rotate_point[0], L_p2[1] + rotate_point[1]];
 
-        const L_p1 = Lorentz([0, 0], sum_speed_backward);
-        const L_p2 = Lorentz([0, 4], sum_speed_backward);
-        let p1 = [L_p1[0] + rotate_point[0], L_p1[1] + rotate_point[1]];
-        let p2 = [L_p2[0] + rotate_point[0], L_p2[1] + rotate_point[1]];
+            returning_points = drawSegmentWithCats(ctx, p1, p2, 5, 0, 'blue', 'running', inverse=!left_dir, skip=0);
+            if (clocks_checked) draw_clocks(ctx, returning_points, left=left_dir, step=1, init=4);
+        }
 
-        returning_points = drawSegmentWithCats(ctx, p1, p2, 5, 0, 'blue', 'running', inverse=!left_dir, skip_first=true);
-        if (clocks_checked) draw_clocks(ctx, returning_points, left=left_dir, step=1, init=4);
+        else twins_animation(twins_animation_state, twin_speed);
     }
 
     else if (MODE == 3){ // many cats
-        for(let i=-8; i<=8; i+=4){
-            sleeping_points2 = drawSegmentWithCats(ctx, [i, -10], [i, 10], 11, frameSpeed, 'blue', 'sleeping');
-            if (clocks_checked) draw_clocks(ctx, sleeping_points2, left=true, step=2, init=-10);
+        if (clocks_checked){
+            for(let i=-8; i<=8; i+=4){
+                sleeping_points1 = drawSegmentWithCats(ctx, [i, -10], [i, 0], 6, frameSpeed, 'blue', 'sleeping');
+                sleeping_points2 = drawSegmentWithCats(ctx, [i, 0], [i, 10], 6, frameSpeed, 'blue', 'awake_cat');
+                draw_clocks(ctx, sleeping_points1, left=true, step=2, init=-10);
+                draw_clocks(ctx, sleeping_points2, left=true, step=2, init=0);
+            }
+        }
+
+        else{
+            for(let i=-8; i<=8; i+=4){
+                sleeping_points = drawSegmentWithCats(ctx, [i, -10], [i, 10], 11, frameSpeed, 'blue', 'sleeping');
+                if (clocks_checked) draw_clocks(ctx, sleeping_points, left=true, step=2, init=-10);
+            }
         }
     }
 
-    else if (MODE == 4){ // long cat
+    else if (MODE == 4){ // arrow
         sum_speed = vel_addition(frameSpeed, -objectSpeed);
-        drawSegmentWithLongArrows(ctx, [0, -10], [0, 10], 11, sum_speed, triangleChecked, switch_checked);
+        drawSegmentWithLongArrows(ctx, [0, -10], [0, 10], 21, sum_speed, triangleChecked, switch_checked);
     }
 
     else if (MODE == 5){ // galaxy
-        if(Math.abs(frameSpeed) < 0.05/horizontalScale) {
-            frame_speed_slider.set(0);
-            frameSpeed = 0;
-        }
-
         drawLine([0, -10], [0, 10], 'black', 3);
 
         sleeping_points = drawSegmentWithCats(ctx, [0, -10], [0, 10], 21, frameSpeed, 'red', 'sleeping');
@@ -205,9 +218,10 @@ function drawMinkowski() {
 
     // Rectangle
     ctx.beginPath();
-    ctx.strokeStyle = "black";
+    ctx.strokeStyle = "#a28fe6";
+    // ctx.strokeStyle = "black";
     ctx.lineWidth = 5;
-    ctx.strokeRect(0, 0, HEIGHT, HEIGHT);
+    ctx.strokeRect(0, 0, HEIGHT-1, HEIGHT/(half_canvas+1)-1);
     ctx.stroke();
 }
 

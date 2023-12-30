@@ -5,6 +5,8 @@ function init_cats(){
     running_flipped.src = 'running_flipped.png';
     const sleeping_cat = new Image();
     sleeping_cat.src = 'sleeping_small.png';
+    const awake_cat = new Image();
+    awake_cat.src = 'awake.png';
     const arrow = new Image();
     arrow.src = 'arrow.png';
     const galaxy = new Image();
@@ -29,7 +31,10 @@ function init_cats(){
     watch.onload = function () { 
         drawMinkowski();
     }
-    return [running_cat, running_flipped, sleeping_cat, arrow, galaxy, watch];
+    awake_cat.onload = function () { 
+        drawMinkowski();
+    }
+    return [running_cat, running_flipped, sleeping_cat, arrow, galaxy, watch, awake_cat];
 }
 
 function draw_cat(ctx, x, y, type, inverse=false)
@@ -50,6 +55,10 @@ function draw_cat(ctx, x, y, type, inverse=false)
         cat = galaxy;
         desired_width = spacing * 1.5 / (zoomChecked+1);
     }
+    else if(type == "awake_cat"){
+        cat = awake_cat;
+        desired_width = spacing * 0.8 / (zoomChecked+1);
+    }
     
     ratio = cat.height / cat.width;
 
@@ -67,13 +76,14 @@ function draw_watch(ctx, x, y, time){
 }
 
 
-function drawSegmentWithCats(ctx, p1, p2, num, speed, color, type, inverse=false, skip_first=false) {
+function drawSegmentWithCats(ctx, p1, p2, num, speed, color, type, inverse=false, skip=-1) {
     const L_p1 = Lorentz(p1, speed);
     const L_p2 = Lorentz(p2, speed);
     drawLine(L_p1, L_p2, color, 3);
     
     const points = distributePointsOnLine(L_p1, L_p2, num);
-    for (let i = 1*skip_first; i < points.length; i++) {
+    for (let i = 0; i < points.length; i++) {
+        if(skip == i) continue;
         draw_cat(ctx, points[i][0], points[i][1], type, inverse);
     }
     return points;
@@ -112,9 +122,9 @@ function drawSegmentWithLongArrows(ctx, p1, p2, num, speed, triangle, switcher) 
         let [left_x, left_y] = points[i];
         let [right_x, right_y] = points2[i];
 
-        draw_watch(ctx, left_x-0.5/horizontalScale, left_y, (i-5)*2);
+        draw_watch(ctx, left_x-0.5/horizontalScale, left_y, i-10);
         drawCIrcle(ctx, left_x, left_y, 3, 'blue');
-        draw_watch(ctx, right_x+0.5/horizontalScale, right_y, (i-5)*2);
+        draw_watch(ctx, right_x+0.5/horizontalScale, right_y, i-10);
         drawCIrcle(ctx, right_x, right_y, 3, 'red');
 
         if(switcher){
