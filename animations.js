@@ -81,20 +81,39 @@ class animations{
         this.running = true;
         let func;
         this.frame_ind = 0;
+        cats_appear_cntr = 500;
     
         if(num == 0){
             if (MODE == 1){ // simple shift, low speed
-                // scale_slider.set(100);
+                // this.rec_start();
+
+
+
+                // scale_slider.set(101); // initial dummy anim with sleeping only
+                // frame_speed_slider.set(0); 
+                // obj_slider.set(0); 
+                // cats_appear_cntr = 0;
+                // func = () => {this.frame_animation_dummy()};
+
+
+                // scale_slider.set(101); // initial dummy sleeping + running appearing
                 // frame_speed_slider.set(0); 
                 // obj_slider.set(0.001); 
-                // func = () => {this.frame_animation(0.001, 0.00001)};
-                // this.rec_start();
-                clocks_checkbox.set(false);
-                triangle_checkbox.set(false);
-                scale_slider.set(1);
+                // cats_appear_cntr = 0;
+                // func = () => {this.frame_animation_dummy()};
+
+                scale_slider.set(100);
                 frame_speed_slider.set(0); 
                 obj_slider.set(0); 
-                func = () => {this.frame_animation3(0.6, 0.005)};
+                func = () => {this.frame_animation_0(0.001, 0.00001)};
+
+
+                // clocks_checkbox.set(false);
+                // triangle_checkbox.set(false);
+                // scale_slider.set(1);
+                // frame_speed_slider.set(0); 
+                // obj_slider.set(0); 
+                // func = () => {this.frame_animation3(0.6, 0.005)};
             }
             else if(MODE == 2){ // twins simple
                 twins_animation_state = 0;
@@ -102,7 +121,7 @@ class animations{
                 scale_slider.set(1);
                 frame_speed_slider.set(0); 
                 obj_slider.set(0); 
-                func = () => {this.object_animation(0.8, 0.006)};
+                func = () => {this.object_animation(twin_speed, 0.006)};
             }
             else if (MODE == 3){ // many cats
                 clocks_checkbox.set(true);
@@ -126,7 +145,7 @@ class animations{
         else if(num == 1){
             if (MODE == 1){ // shift back and forth, low speed, without object
                 light_checkbox.set(true);
-                scale_slider.set(100);
+                scale_slider.set(101);
                 frame_speed_slider.set(0); 
                 obj_slider.set(0); 
                 func = () => {this.frame_animation2(0.0005, 0.00001)};
@@ -141,9 +160,13 @@ class animations{
                 func = () => {this.twins_animation2(twin_speed, 0.006)};
             }
             else if (MODE == 3){ // many cats
-                scale_slider.set(1);
+                // scale_slider.set(1);
+                // frame_speed_slider.set(0); 
+                // func = () => {this.frame_animation2(0.5, 0.01)};
+
+                scale_slider.set(101);
                 frame_speed_slider.set(0); 
-                func = () => {this.frame_animation2(0.5, 0.006)};
+                func = () => {this.frame_animation2(0.0005, 0.00001)};
             }
         }   
 
@@ -179,6 +202,15 @@ class animations{
         this.interval_id = setInterval(func, this.interval);
     }
 
+    frame_animation_dummy(){
+        this.frame_ind++;
+        if(this.frame_ind % 10 == 0){
+            cats_appear_cntr++;
+            update();
+        }
+        if(cats_appear_cntr > 20) this.stop();
+    }
+
     scale_animation(target, step){
         if (this.move_slider(scale_slider, target, step));
         else this.stop();
@@ -197,27 +229,27 @@ class animations{
 
         if(this.frame_ind < 50);
 
-        else if(this.frame_ind < 160){
+        else if(this.frame_ind < 200){
             this.move_slider(obj_slider, target, step);
         }
 
-        else if(this.frame_ind < 270){
+        else if(this.frame_ind < 350){
             this.move_slider(frame_speed_slider, target, step);
         }
 
-        else if(this.frame_ind < 370){
+        else if(this.frame_ind < 490){
             if(twins_animation_state < 41) twins_animation_state += 1;
             update();
         }
 
-        else if(this.frame_ind < 520){
+        else if(this.frame_ind < 680){
             twins_animation_state = 42;
-            this.move_slider(frame_speed_slider, 0, step);
+            this.move_slider(frame_speed_slider, -0.006, step);
         }
 
-        else if(this.frame_ind < 570){
+        else if(this.frame_ind < 700){
             twins_animation_state = 43;
-            if(this.frame_ind == 520) obj_slider.set(0);
+            if(this.frame_ind == 680) obj_slider.set(0);
             update();
         }
 
@@ -247,7 +279,16 @@ class animations{
     frame_animation(target, step){
         this.frame_ind++;
         if(this.frame_ind < 50) return;
-        if (this.move_slider(frame_speed_slider, target, step));
+        else if (this.move_slider(frame_speed_slider, target, step));
+        else this.stop();
+    }
+
+    frame_animation_0(target, step){
+        this.frame_ind++;
+        if(this.frame_ind < 50) obj_slider.set(0);
+        else if (this.frame_ind == 50) obj_slider.set(0.001);
+        else if (this.frame_ind < 150);
+        else if (this.move_slider(frame_speed_slider, target, step));
         else this.stop();
     }
 
@@ -255,15 +296,15 @@ class animations{
         this.frame_ind++;
         if(this.frame_ind < 50) return;
 
-        else if(this.frame_ind < 110){
+        else if(this.frame_ind < 120){
             this.move_slider(frame_speed_slider, ampl, step);
         }
 
-        else if(this.frame_ind < 220){
+        else if(this.frame_ind < 240){
             this.move_slider(frame_speed_slider, -ampl, step);
         }
 
-        else if(this.move_slider(frame_speed_slider, 0, step));
+        else if(this.move_slider(frame_speed_slider, 0.00000, step));
 
         else this.stop();
     }
@@ -368,7 +409,7 @@ function twins_animation(state, target){
         if(state == 43){
             sum_speed_forward = vel_addition(frameSpeed, objectSpeed);
             running_points_2 = drawSegmentWithCats(ctx, [0, 0], [0, 4], 5, sum_speed_forward, 'blue', 'running', inverse=true, skip=0);
-            if (clocks_checked) draw_clocks(ctx, running_points_2.slice(1), left=false, step=1, init=4);
+            if (clocks_checked) draw_clocks(ctx, running_points_2.slice(1), left=false, step=1, init=5);
         }
     }
 }

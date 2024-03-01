@@ -76,14 +76,15 @@ function draw_watch(ctx, x, y, time){
 }
 
 
-function drawSegmentWithCats(ctx, p1, p2, num, speed, color, type, inverse=false, skip=-1) {
+function drawSegmentWithCats(ctx, p1, p2, num, speed, color, type, inverse=false, skip=-1, anim=500) {
     const L_p1 = Lorentz(p1, speed);
     const L_p2 = Lorentz(p2, speed);
-    drawLine(L_p1, L_p2, color, 3);
+    if(anim > 1) drawLine(L_p1, L_p2, color, 3);
     
     const points = distributePointsOnLine(L_p1, L_p2, num);
     for (let i = 0; i < points.length; i++) {
         if(skip == i) continue;
+        if(i > (anim-2)) continue;
         draw_cat(ctx, points[i][0], points[i][1], type, inverse);
     }
     return points;

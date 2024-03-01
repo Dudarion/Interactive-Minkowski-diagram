@@ -19,10 +19,11 @@ let globalShift = false;
 let clocks_checked = false;
 let spacing = canvas.height / 20;
 let lightcone = true;
-const twin_speed = 0.7;
+const twin_speed = 0.75;
 
 let half_canvas = false;
 let twins_animation_state = 0;
+let cats_appear_cntr = 500;
 
 let MODE = 1;
 
@@ -123,15 +124,15 @@ function drawMinkowski() {
         let left_dir = objectSpeed < 0;
 
         if(light_checked){
-            drawSegmentWithCats(ctx, [-30, -30], [30, 30], 61, frameSpeed, 'orange', 'running', inverse=false, skip=30);
-            drawSegmentWithCats(ctx, [30, -30], [-30, 30], 61, frameSpeed, 'orange', 'running', inverse=true, skip=30);
+            drawSegmentWithCats(ctx, [-30, -30], [30, 30], 61, frameSpeed, 'orange', 'running', inverse=false, skip=30, anim=cats_appear_cntr);
+            drawSegmentWithCats(ctx, [30, -30], [-30, 30], 61, frameSpeed, 'orange', 'running', inverse=true, skip=30, anim=cats_appear_cntr);
             // drawSegmentWithCats(ctx, [-0.03, -30], [0.03, 30], 61, frameSpeed, 'orange', 'running', inverse=false, skip=30);
             // drawSegmentWithCats(ctx, [0.03, -30], [-0.03, 30], 61, frameSpeed, 'orange', 'running', inverse=true, skip=30);
         }
 
         // if(!light_checked || Math.abs(objectSpeed) > 0.1/horizontalScale){
         if(!light_checked && Math.abs(objectSpeed) > 0.1/horizontalScale){
-            running_points = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, sum_speed, 'blue', 'running', inverse=left_dir, skip=0);
+            running_points = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, sum_speed, 'blue', 'running', inverse=left_dir, skip=0, anim=cats_appear_cntr);
             if (clocks_checked) draw_clocks(ctx, running_points, left=left_dir, step=1, init=0);
 
             if(triangleChecked){
@@ -142,8 +143,8 @@ function drawMinkowski() {
                 drawLine([x1, y2], [x2, y2], 'blue', 4);
             }
         }
-
-        sleeping_points = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, frameSpeed, 'red', 'sleeping');
+        console.log(cats_appear_cntr);
+        sleeping_points = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, frameSpeed, 'red', 'sleeping', inverse=false, skip=-1, anim=500);
         if (clocks_checked) draw_clocks(ctx, sleeping_points, left=!left_dir, step=1, init=0);
     }
 
@@ -186,7 +187,6 @@ function drawMinkowski() {
         else{
             for(let i=-8; i<=8; i+=4){
                 sleeping_points = drawSegmentWithCats(ctx, [i, -10], [i, 10], 11, frameSpeed, 'blue', 'sleeping');
-                if (clocks_checked) draw_clocks(ctx, sleeping_points, left=true, step=2, init=-10);
             }
         }
     }
