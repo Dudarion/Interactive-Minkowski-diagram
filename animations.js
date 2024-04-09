@@ -22,19 +22,29 @@ class animations{
         const buttonRow = document.createElement('div');
         buttonRow.style.display = 'flex';
         buttonRow.style.justifyContent = 'space-around';
-        buttonRow.style.width = '100%'; // Adjust width as needed
-        buttonRow.style.marginTop = '10px'; // Margin for spacing, adjust as needed
+        buttonRow.style.width = '100%';
+        buttonRow.style.marginTop = '10px'; 
 
         this.buttons = [];
+
+        
+        // Find the container where the checkbox will be added
+        const container2 = document.getElementById('slider-container');
+        const wait_button = document.createElement('button');
+        wait_button.textContent = 'Wait'; 
+        container2.appendChild(wait_button);
+        wait_button.addEventListener('click', (event) => this.wait_animate());
     
         // Create and append buttons
         for (let i = 0; i < 5; i++) {
             const button = document.createElement('button');
-            button.textContent = `Anim ${i + 1}`; // Customize button text as needed
+            button.textContent = `Anim ${i + 1}`; 
             buttonRow.appendChild(button);
             button.addEventListener('click', (event) => this.animate(i));
             this.buttons.push(button);
         }
+        this.buttons.push(wait_button);
+        wait_button.hidden = true;
     
         container.appendChild(buttonRow);
 
@@ -72,6 +82,36 @@ class animations{
 
     rec_stop(){
         this.rec.stop();
+    }
+
+
+    wait_animate(){
+        const wait_time = wait_slider.value;
+        console.log('wait', wait_time);
+        if(this.running) return;
+        this.running = true;
+        this.frame_ind = 0;
+        // let func2 = this.wait_animation.bind(this, wait_time);
+        let func = () => {this.wait_animation(wait_time)};
+        this.interval_id = setInterval(func, this.interval);
+    }
+
+    wait_animation(wait_time){
+        this.frame_ind++;
+        if(wait_shift < wait_time){
+            wait_shift += 0.1;
+            update();
+        }
+        else {
+            saved_speed_origin = frameSpeed;
+            saved_galaxy_p1 = curr_galaxy_p1.slice();
+            saved_galaxy_p2 = curr_galaxy_p2.slice();
+            saved_sleeping_p1 = curr_sleeping_p1.slice();
+            saved_sleeping_p2 = curr_sleeping_p2.slice();
+            wait_shift = 0;
+            update();
+            this.stop();
+        }
     }
     
 
@@ -348,7 +388,7 @@ class animations{
         this.running = false;
         console.log("STOPPED");
         update();
-        this.rec_stop();
+        // this.rec_stop();
     }
 }
 

@@ -113,6 +113,26 @@ function createHeader(containerId, text){
 }
 
 
+class createButton{
+    constructor(containerId, label){
+        // Find the container where the checkbox will be added
+        const container = document.getElementById(containerId);
+        this.button = document.createElement('button');
+        this.button.textContent = label; 
+        container.appendChild(this.button);
+        
+    }
+
+    set_handler(func){
+        this.button.addEventListener('click', func);
+    }
+
+    hide(bool){
+        this.button.hidden = bool;
+    }
+}
+
+
 class createCheckbox{
     constructor(containerId, label, checkboxId, handler){
         // Find the container where the checkbox will be added
@@ -246,11 +266,13 @@ function selectTab(event, tabId) {
     clocks_checkbox.set(false);
     frame_speed_slider.hide(false);
     frame_speed_slider.set(0);
+    wait_slider.set(0);
+    wait_slider.hide(true);
     length_switcher.hide(true);
     clocks_checkbox.hide(false);
     light_checkbox.hide(true);
     scale_slider.set(1);
-    for(let i=0; i<5; i++){
+    for(let i=0; i<6; i++){
         animator.buttons[i].hidden = true;
     }
 
@@ -319,13 +341,19 @@ function selectTab(event, tabId) {
         mode_header.textContent = "Fast travel";
 
         animator.buttons[0].hidden = false;
+        animator.buttons[5].hidden = false;
 
         lightcone = false;
         obj_slider.set(0);
         obj_slider.hide(true);
+        wait_slider.set(0);
+        wait_slider.hide(false);
         frame_speed_slider.set(0);
         triangle_checkbox.hide(false);
         clocks_checkbox.set(true);
+
+        saved_speed_origin = 0;
+
     }
 
     console.log("Mode: ", MODE);

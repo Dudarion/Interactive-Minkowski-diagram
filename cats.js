@@ -96,7 +96,7 @@ function draw_clocks(ctx, points, left=true, step=1, init=0){
     
     for (let cc=0; cc < points.length; cc++){
         let time = (step * cc) + init;
-        draw_watch(ctx, points[cc][0]-shift, points[cc][1], time);
+        draw_watch(ctx, points[cc][0]-shift, points[cc][1], time);///////////////////////////shift=0 for many galaxy light clocks
     }
 }
 

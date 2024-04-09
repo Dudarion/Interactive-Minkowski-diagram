@@ -21,6 +21,17 @@ let spacing = canvas.height / 20;
 let lightcone = true;
 const twin_speed = 0.75;
 
+let wait_shift = 0;
+let saved_speed_origin = 0;
+let saved_sleeping_p1 = [0, -20];
+let saved_sleeping_p2 = [0, 20];
+let saved_galaxy_p1 = [7, -28];
+let saved_galaxy_p2 = [7, 28];
+let curr_sleeping_p1 = [0, -20];
+let curr_sleeping_p2 = [0, 20];
+let curr_galaxy_p1 = [7, -28];
+let curr_galaxy_p2 = [7, 28];
+
 let half_canvas = false;
 let twins_animation_state = 0;
 let cats_appear_cntr = 500;
@@ -29,8 +40,10 @@ let MODE = 1;
 
 const mode_header = createHeader('slider-container', "Coordinate transform");
 const scale_slider = new createSlider('slider-container', 'Scale', 1, 100, 1, 0.01, '', update);
-const frame_speed_slider =  new createSlider('slider-container', 'Frame speed', -0.99, 0.99, 0, 0.001, ' c', update);
+const frame_speed_slider =  new createSlider('slider-container', 'Observer speed', -0.99, 0.99, 0, 0.001, ' c', update);
 const obj_slider =  new createSlider('slider-container', 'Object speed', -0.99, 0.99, 0.5, 0.001, ' c', update);
+const wait_slider =  new createSlider('slider-container', 'Wait time', 0., 10., 0., 0.001, ' sec', update);
+wait_slider.hide(true);
 // const frame_movement_slider =  new createSlider('slider-container', 'Frame movement', -10, 10, 0, 0.01, '', update);
 const triangle_checkbox = new createCheckbox('slider-container', " Triangle", 1, update);
 const zoom_checkbox = new createCheckbox('slider-container', " Zoom", 2, update);
@@ -39,6 +52,7 @@ const clocks_checkbox = new createCheckbox('slider-container', " Clocks", 4, upd
 const length_switcher = new createSwitch('slider-container', "Length measurement:", "Global time", "Local time", update);
 // const twins_switcher = new createSwitch('slider-container', false, "Twins paradox", false, update);
 const animator = new animations('slider-container');
+
 
 // Call resizeCanvas initially to ensure proper sizing
 window.addEventListener('resize', resizeCanvas);
@@ -199,11 +213,37 @@ function drawMinkowski() {
     else if (MODE == 5){ // galaxy
         drawLine([0, -10], [0, 10], 'black', 3);
 
-        sleeping_points = drawSegmentWithCats(ctx, [0, -10], [0, 10], 21, frameSpeed, 'red', 'sleeping');
-        if (clocks_checked) draw_clocks(ctx, sleeping_points, left=true, step=1, init=-10);
 
-        galaxy_points = drawSegmentWithCats(ctx, [7, -14], [7, 14], 29, frameSpeed, 'red', 'galaxy');
-        if (clocks_checked) draw_clocks(ctx, galaxy_points, left=false, step=1, init=-14);
+
+        let sleeping_p1 = Lorentz(saved_sleeping_p1, frameSpeed-saved_speed_origin);
+        let sleeping_p2 = Lorentz(saved_sleeping_p2, frameSpeed-saved_speed_origin);
+
+        curr_sleeping_p1 = [sleeping_p1[0], sleeping_p1[1] - wait_shift];
+        curr_sleeping_p2 = [sleeping_p2[0], sleeping_p2[1] - wait_shift];
+
+        let galaxy_p1 = Lorentz(saved_galaxy_p1, frameSpeed-saved_speed_origin);
+        let galaxy_p2 = Lorentz(saved_galaxy_p2, frameSpeed-saved_speed_origin);
+
+        curr_galaxy_p1 = [galaxy_p1[0], galaxy_p1[1] - wait_shift];
+        curr_galaxy_p2 = [galaxy_p2[0], galaxy_p2[1] - wait_shift];
+
+        sleeping_points = drawSegmentWithCats(ctx, curr_sleeping_p1, curr_sleeping_p2, 41, 0, 'red', 'sleeping');
+        galaxy_points = drawSegmentWithCats(ctx, curr_galaxy_p1, curr_galaxy_p2, 57, 0, 'red', 'galaxy');
+
+
+
+        // sleeping_points = drawSegmentWithCats(ctx, [0, -10], [0, 10], 21, frameSpeed, 'red', 'sleeping');
+        if (clocks_checked) draw_clocks(ctx, sleeping_points, left=true, step=1, init=-20);
+
+        // galaxy_points = drawSegmentWithCats(ctx, [7, -14], [7, 14], 29, frameSpeed, 'red', 'galaxy');
+        if (clocks_checked) draw_clocks(ctx, galaxy_points, left=false, step=1, init=-28);
+
+        // for(let i=-10; i<11; i++){
+        //     let L_p1 = Lorentz([7, i], frameSpeed);
+        //     let L_p2 = Lorentz([-7, i+14], frameSpeed);
+        //     let impulses_points = distributePointsOnLine(L_p1, L_p2, 15);
+        //     draw_clocks(ctx, impulses_points, left=false, step=0, init=i+7);
+        // }
 
         if(triangleChecked){
             let [x1, y1] = galaxy_points[0];
