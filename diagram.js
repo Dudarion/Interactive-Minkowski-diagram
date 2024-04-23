@@ -6,7 +6,7 @@ const [running_cat, running_flipped, sleeping_cat, arrow, galaxy, watch, awake_c
 let HEIGHT = Math.min(window.innerHeight, window.innerWidth) * 0.9;
 
 
-let horizontalScale = 1;
+let horizontalScale = ((100-1) ** 5 / 10000000) + 1;;
 let objectSpeed = 0; // as a fraction of the speed of light
 let frameSpeed = 0;
 // let frameMovement = 0;
@@ -36,6 +36,10 @@ let half_canvas = false;
 let twins_animation_state = 0;
 let cats_appear_cntr = 500;
 
+let rockets_animation_state = 0;
+let rockets_animation_step = 0;
+let init_scale = 0;
+
 let MODE = 1;
 
 const mode_header = createHeader('slider-container', "Coordinate transform");
@@ -60,7 +64,7 @@ resizeCanvas(); // This ensures the canvas is sized before the first draw
 
 
 function update(){
-    horizontalScale = ((scale_slider.value-1) ** 5 / 10000000) + 1;
+    //horizontalScale = ((scale_slider.value-1) ** 5 / 10000000) + 1;
     objectSpeed = obj_slider.value;
     frameSpeed = frame_speed_slider.value;
     // frameMovement = frame_movement_slider.value;
@@ -81,7 +85,7 @@ function update(){
 // Set canvas size
 function resizeCanvas() {
     HEIGHT = Math.min(window.innerHeight, window.innerWidth) * 0.9;
-    canvas.width = HEIGHT;
+    canvas.width = HEIGHT*2;
     canvas.height = HEIGHT/(half_canvas+1);
     // canvas.moveTo(window.innerHeight/2, window.innerHeight/2)
     update(); 
@@ -124,12 +128,12 @@ function drawMinkowski() {
 
     // Light cones
     if(lightcone){
-        drawLine([-10, -10], [10, 10], 'orange', 3);
-        drawLine([-10, 10], [10, -10], 'orange', 3);
+        drawLine2([-10, -10], [10, 10], 'red', 3);
+        drawLine2([-10, 10], [10, -10], 'red', 3);
     }
 
     // Horizontal and vertical axes
-    drawLine([-10, 0], [10, 0], 'black', 2);
+    drawLine([-20, 0], [20, 0], 'black', 2);
 
     if (MODE == 1){ // running and sleeping
         drawLine([0, -10], [0, 10], 'black', 2);
@@ -137,29 +141,117 @@ function drawMinkowski() {
 
         let left_dir = objectSpeed < 0;
 
-        if(light_checked){
-            drawSegmentWithCats(ctx, [-30, -30], [30, 30], 61, frameSpeed, 'orange', 'running', inverse=false, skip=30, anim=cats_appear_cntr);
-            drawSegmentWithCats(ctx, [30, -30], [-30, 30], 61, frameSpeed, 'orange', 'running', inverse=true, skip=30, anim=cats_appear_cntr);
-            // drawSegmentWithCats(ctx, [-0.03, -30], [0.03, 30], 61, frameSpeed, 'orange', 'running', inverse=false, skip=30);
-            // drawSegmentWithCats(ctx, [0.03, -30], [-0.03, 30], 61, frameSpeed, 'orange', 'running', inverse=true, skip=30);
+        if (rockets_animation_state == 0){
+
+            if(light_checked){
+                drawSegmentWithCats(ctx, [-30, -30], [30, 30], 61, frameSpeed, 'orange', 'running', inverse=false, skip=30, anim=cats_appear_cntr);
+                drawSegmentWithCats(ctx, [30, -30], [-30, 30], 61, frameSpeed, 'orange', 'running', inverse=true, skip=30, anim=cats_appear_cntr);
+                // drawSegmentWithCats(ctx, [-0.03, -30], [0.03, 30], 61, frameSpeed, 'orange', 'running', inverse=false, skip=30);
+                // drawSegmentWithCats(ctx, [0.03, -30], [-0.03, 30], 61, frameSpeed, 'orange', 'running', inverse=true, skip=30);
+            }
+
+            // if(!light_checked || Math.abs(objectSpeed) > 0.1/horizontalScale){
+            if(!light_checked){
+                running_points = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, sum_speed, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                if (clocks_checked) draw_clocks(ctx, running_points, left=left_dir, step=1, init=0);
+
+                if(triangleChecked){
+                    [x1, y1] = running_points[6];
+                    [x2, y2] = sleeping_points[6];
+                    drawLine([x1, y1], [x2, y2], 'green', 4);
+                    drawLine([x1, y1], [x1, y2], 'red', 4);
+                    drawLine([x1, y2], [x2, y2], 'blue', 4);
+                }
+            }
+            // console.log(cats_appear_cntr);
+            // sleeping_points = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, frameSpeed, 'red', 'sleeping', inverse=false, skip=-1, anim=500);
+            // if (clocks_checked) draw_clocks(ctx, sleeping_points, left=!left_dir, step=1, init=0);
         }
+        else{
+            let den = 132500;
+            if(rockets_animation_state <= 40){
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, rockets_animation_step/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                rockets_animation_step += 1;
+            }
 
-        // if(!light_checked || Math.abs(objectSpeed) > 0.1/horizontalScale){
-        if(!light_checked && Math.abs(objectSpeed) > 0.1/horizontalScale){
-            running_points = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, sum_speed, 'blue', 'running', inverse=left_dir, skip=0, anim=cats_appear_cntr);
-            if (clocks_checked) draw_clocks(ctx, running_points, left=left_dir, step=1, init=0);
+            else if(rockets_animation_state > 40 && rockets_animation_state <= 60){
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, rockets_animation_step/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+            }
 
-            if(triangleChecked){
-                [x1, y1] = running_points[6];
-                [x2, y2] = sleeping_points[6];
-                drawLine([x1, y1], [x2, y2], 'green', 4);
-                drawLine([x1, y1], [x1, y2], 'red', 4);
-                drawLine([x1, y2], [x2, y2], 'blue', 4);
+            else if(rockets_animation_state <= 100 && rockets_animation_state > 60){
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-40)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                rockets_animation_step += 1;
+            }
+
+            else if(rockets_animation_state > 100 && rockets_animation_state <= 120){
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-40)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+            }
+
+            else if(rockets_animation_state <= 160 && rockets_animation_state > 120){
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-40)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-80)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                rockets_animation_step += 1;
+            }
+            
+            else if(rockets_animation_state > 160 && rockets_animation_state <= 180){
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-40)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-80)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+            }
+
+            else if(rockets_animation_state > 180 && rockets_animation_state <= 220){
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-40)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-80)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-120)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                rockets_animation_step += 1;
+            }
+
+            else if(rockets_animation_state > 220 && rockets_animation_state <= 240){
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-40)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-80)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-120)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+            }
+
+            else if(rockets_animation_state > 240 && rockets_animation_state <= 460){
+                if(rockets_animation_state == 241) init_scale = horizontalScale;
+                let scale_100 = 100-(rockets_animation_state-240) * 100/220;
+                horizontalScale = ((scale_100-1) ** 5 / 10000000) + 1;
+
+                console.log("horizontalScale1: ", horizontalScale);
+                
+                
+
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (init_scale/horizontalScale) * (rockets_animation_step)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (init_scale/horizontalScale) * (rockets_animation_step-40)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (init_scale/horizontalScale) * (rockets_animation_step-80)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (init_scale/horizontalScale) * (rockets_animation_step-120)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+            }
+
+            else{
+                console.log("horizontalScale2: ", horizontalScale);
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (init_scale/horizontalScale) * (rockets_animation_step)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (init_scale/horizontalScale) * (rockets_animation_step-40)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (init_scale/horizontalScale) * (rockets_animation_step-80)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (init_scale/horizontalScale) * (rockets_animation_step-120)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
             }
         }
-        console.log(cats_appear_cntr);
-        sleeping_points = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, frameSpeed, 'red', 'sleeping', inverse=false, skip=-1, anim=500);
-        if (clocks_checked) draw_clocks(ctx, sleeping_points, left=!left_dir, step=1, init=0);
+
+        
     }
 
     else if (MODE == 2){ // twins paradox
@@ -261,13 +353,19 @@ function drawMinkowski() {
     ctx.strokeStyle = "#a28fe6";
     // ctx.strokeStyle = "black";
     ctx.lineWidth = 5;
-    ctx.strokeRect(0, 0, HEIGHT-1, HEIGHT/(half_canvas+1)-1);
+    ctx.strokeRect(0, 0, 2*HEIGHT-1, HEIGHT/(half_canvas+1)-1);
     ctx.stroke();
 }
 
 
 function convertCanvas(x, y){
     let new_x = canvas.width / 2 + x*spacing*horizontalScale;
+    let new_y = (globalShift*0.9+1) * canvas.height / 2 - y*spacing + zoomChecked*spacing*5;
+    return [new_x, new_y];
+}
+
+function convertCanvas2(x, y){
+    let new_x = canvas.width / 2 + x*spacing;
     let new_y = (globalShift*0.9+1) * canvas.height / 2 - y*spacing + zoomChecked*spacing*5;
     return [new_x, new_y];
 }
@@ -282,11 +380,21 @@ function LT(x, y){ // in spacings (light seconds)
     ctx.lineTo(new_x, new_y);
 }
 
+function MT2(x, y){ // in spacings (light seconds)
+    [new_x, new_y] = convertCanvas2(x, y);
+    ctx.moveTo(new_x, new_y);
+}
+
+function LT2(x, y){ // in spacings (light seconds)
+    [new_x, new_y] = convertCanvas2(x, y);
+    ctx.lineTo(new_x, new_y);
+}
+
 function drawGrid(){
     // Draw grid
     ctx.lineWidth = 2;
 
-    if(horizontalScale > 150){
+    if(1 > 150){
         // Vertical grid lines
         ctx.beginPath();
         const color = 255-Math.round((horizontalScale-150)*0.318/3);
@@ -304,11 +412,11 @@ function drawGrid(){
         // Vertical grid lines
         ctx.beginPath();
         ctx.strokeStyle = '#ccc'; // Light grey for the grid lines
-        for (let x = 0; x < 10; x += 1) {
-            MT(x, -10);
-            LT(x, 20);
-            MT(-x, -10);
-            LT(-x, 20);
+        for (let x = 0; x < 20; x += 1) {
+            MT2(x, -10);
+            LT2(x, 20);
+            MT2(-x, -10);
+            LT2(-x, 20);
         }
         ctx.stroke();
     }
@@ -317,10 +425,10 @@ function drawGrid(){
     ctx.beginPath();
     ctx.strokeStyle = '#ccc'; // Light grey for the grid lines
     for (let y = 0; y < (10 + globalShift*10); y += 1) {
-        MT(-10, y);
-        LT(10, y);
-        MT(-10, -y);
-        LT(10, -y);
+        MT(-20, y);
+        LT(20, y);
+        MT(-20, -y);
+        LT(20, -y);
     }
     ctx.stroke();
 }
@@ -394,5 +502,14 @@ function drawLine(p1, p2, color, width){
     ctx.beginPath();
     MT(p1[0], p1[1]);
     LT(p2[0], p2[1]);
+    ctx.stroke();
+}
+
+function drawLine2(p1, p2, color, width){
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.beginPath();
+    MT2(p1[0], p1[1]);
+    LT2(p2[0], p2[1]);
     ctx.stroke();
 }

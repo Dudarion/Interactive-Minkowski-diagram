@@ -184,18 +184,20 @@ class animations{
 
         else if(num == 1){
             if (MODE == 1){ // shift back and forth, low speed, without object
-                light_checkbox.set(true);
-                scale_slider.set(101);
-                frame_speed_slider.set(0); 
+                globalShift = false; 
                 obj_slider.set(0); 
-                func = () => {this.frame_animation2(0.0005, 0.00001)};
-                // this.rec_start();
+                scale_slider.set(100);
+                zoom_checkbox.set(true);
+                rockets_animation_state = 1;
+                update();
+                func = () => {this.rockets_animation()};
             }
             else if(MODE == 2){ // twins  long animation
                 globalShift = false; 
                 scale_slider.set(1);
                 obj_slider.set(0); 
                 twins_animation_state = 1;
+                rockets_animation_step = 0;
                 update();
                 func = () => {this.twins_animation2(twin_speed, 0.006)};
             }
@@ -231,12 +233,13 @@ class animations{
         }    
 
         else if(num == 4){ // frame speed changing with light cats
-            light_checkbox.set(true);
-            scale_slider.set(1);
-            frame_speed_slider.set(0); 
-            
+            globalShift = false; 
             obj_slider.set(0); 
-            func = () => {this.scale_animation2()};
+            scale_slider.set(100);
+            zoom_checkbox.set(true);
+            rockets_animation_state = 1;
+            update();
+            func = () => {this.rockets_animation()};
         }
 
         this.interval_id = setInterval(func, this.interval);
@@ -294,6 +297,19 @@ class animations{
         }
 
         else if(this.move_slider(obj_slider, target, step));
+
+        else this.stop();
+    }
+
+    rockets_animation(){
+        this.frame_ind++;
+
+        if(this.frame_ind < 50);
+
+        else if(this.frame_ind < 700){
+            rockets_animation_state += 1;
+            update();
+        }
 
         else this.stop();
     }
