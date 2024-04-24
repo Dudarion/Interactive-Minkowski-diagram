@@ -170,59 +170,79 @@ function drawMinkowski() {
         else{
             let den = 132500;
             if(rockets_animation_state <= 40){
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, rockets_animation_step/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_1 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, rockets_animation_step/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_2 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
                 rockets_animation_step += 1;
+                drawLine(ps_1[3], ps_2[3], 'green', 7);
             }
 
             else if(rockets_animation_state > 40 && rockets_animation_state <= 60){
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, rockets_animation_step/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_1 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, rockets_animation_step/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_2 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawLine(ps_1[3], ps_2[3], 'green', 7);
             }
 
             else if(rockets_animation_state <= 100 && rockets_animation_state > 60){
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-40)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_1 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_2 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-40)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_3 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
                 rockets_animation_step += 1;
+                drawLine(ps_1[3], ps_2[3], 'green', 7);
+                drawLine(ps_2[3], ps_3[3], 'red', 7);
             }
 
             else if(rockets_animation_state > 100 && rockets_animation_state <= 120){
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-40)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_1 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_2 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-40)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_3 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawLine(ps_1[3], ps_2[3], 'green', 7);
+                drawLine(ps_2[3], ps_3[3], 'red', 7);
             }
 
             else if(rockets_animation_state <= 160 && rockets_animation_state > 120){
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-40)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-80)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_1 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_2 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-40)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_3 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-80)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_4 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
                 rockets_animation_step += 1;
+                drawLine(ps_1[3], ps_2[3], 'green', 7);
+                drawLine(ps_2[3], ps_3[3], 'red', 7);
+                drawLine(ps_3[3], ps_4[3], 'green', 7);
             }
             
             else if(rockets_animation_state > 160 && rockets_animation_state <= 180){
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-40)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-80)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_1 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_2 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-40)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_3 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-80)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_4 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawLine(ps_1[3], ps_2[3], 'green', 7);
+                drawLine(ps_2[3], ps_3[3], 'red', 7);
+                drawLine(ps_3[3], ps_4[3], 'green', 7);
             }
 
             else if(rockets_animation_state > 180 && rockets_animation_state <= 220){
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-40)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-80)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-120)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_1 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_2 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-40)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_3 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-80)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_4 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-120)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_5 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
                 rockets_animation_step += 1;
+                drawLine(ps_1[3], ps_2[3], 'green', 7);
+                drawLine(ps_2[3], ps_3[3], 'red', 7);
+                drawLine(ps_3[3], ps_4[3], 'green', 7);
+                drawLine(ps_4[3], ps_5[3], 'red', 7);
             }
 
             else if(rockets_animation_state > 220 && rockets_animation_state <= 240){
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-40)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-80)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-120)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_1 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_2 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-40)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_3 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-80)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_4 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (rockets_animation_step-120)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_5 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                drawLine(ps_1[3], ps_2[3], 'green', 7);
+                drawLine(ps_2[3], ps_3[3], 'red', 7);
+                drawLine(ps_3[3], ps_4[3], 'green', 7);
+                drawLine(ps_4[3], ps_5[3], 'red', 7);
             }
 
             else if(rockets_animation_state > 240 && rockets_animation_state <= 460){
@@ -230,24 +250,35 @@ function drawMinkowski() {
                 let scale_100 = 100-(rockets_animation_state-240) * 100/220;
                 horizontalScale = ((scale_100-1) ** 5 / 10000000) + 1;
 
-                console.log("horizontalScale1: ", horizontalScale);
-                
-                
 
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (init_scale/horizontalScale) * (rockets_animation_step)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (init_scale/horizontalScale) * (rockets_animation_step-40)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (init_scale/horizontalScale) * (rockets_animation_step-80)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (init_scale/horizontalScale) * (rockets_animation_step-120)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_1 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (init_scale/horizontalScale) * (rockets_animation_step)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_2 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (init_scale/horizontalScale) * (rockets_animation_step-40)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_3 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (init_scale/horizontalScale) * (rockets_animation_step-80)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_4 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (init_scale/horizontalScale) * (rockets_animation_step-120)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_5 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                if(isNaN(ps_1[3][0])) {
+                    ps_1[3][0] = -10;
+                    ps_1[3][1] = 10.5;
+                }
+                drawLine(ps_1[3], ps_2[3], 'green', 7);
+                drawLine(ps_2[3], ps_3[3], 'red', 7);
+                drawLine(ps_3[3], ps_4[3], 'green', 7);
+                drawLine(ps_4[3], ps_5[3], 'red', 7);
             }
 
             else{
-                console.log("horizontalScale2: ", horizontalScale);
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (init_scale/horizontalScale) * (rockets_animation_step)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (init_scale/horizontalScale) * (rockets_animation_step-40)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (init_scale/horizontalScale) * (rockets_animation_step-80)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (init_scale/horizontalScale) * (rockets_animation_step-120)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
-                drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_1 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (init_scale/horizontalScale) * (rockets_animation_step)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_2 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (init_scale/horizontalScale) * (rockets_animation_step-40)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_3 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (init_scale/horizontalScale) * (rockets_animation_step-80)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_4 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, (init_scale/horizontalScale) * (rockets_animation_step-120)/den, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                let ps_5 = drawSegmentWithCats(ctx, [0, 0], [0, 10], 11, 0, 'blue', 'running', inverse=left_dir, skip=-1, anim=cats_appear_cntr);
+                ps_1[3][0] = -10;
+                ps_1[3][1] = 10.5;
+                drawLine(ps_1[3], ps_2[3], 'green', 7);
+                drawLine(ps_2[3], ps_3[3], 'red', 7);
+                drawLine(ps_3[3], ps_4[3], 'green', 7);
+                drawLine(ps_4[3], ps_5[3], 'red', 7);
+                
             }
         }
 
